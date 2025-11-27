@@ -1,5 +1,5 @@
 // basic example
-export const map1 = [
+export const mapBasicExample = [
   [" ", " ", "@", "-", "-", "-", "A", "-", "-", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", "x", "-", "B", "-", "+", " ", " ", " ", "C"],
@@ -7,7 +7,7 @@ export const map1 = [
   [" ", " ", " ", " ", " ", " ", "+", "-", "-", "-", "+"],
 ];
 // go straight through intersections
-export const map2 = [
+export const mapGoStraightThroughIntersections = [
   [" ", " ", "@", " ", " ", " ", " ", " ", " ", " ", " ", " "],
   [" ", " ", "|", " ", "+", "-", "C", "-", "-", "+", " ", " "],
   [" ", " ", "A", " ", "|", " ", " ", " ", " ", "|", " ", " "],
@@ -17,7 +17,7 @@ export const map2 = [
   [" ", " ", " ", " ", "+", "-", "-", "-", "D", "-", "-", "+"],
 ];
 // letters may be found on turns
-export const map3 = [
+export const mapLettersMayBeFoundOnTurns = [
   [" ", " ", "@", "-", "-", "-", "A", "-", "-", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", "x", "-", "B", "-", "+", " ", " ", " ", "|"],
@@ -25,7 +25,7 @@ export const map3 = [
   [" ", " ", " ", " ", " ", " ", "+", "-", "-", "-", "C"],
 ];
 // do not collect a letter from the same location twice
-export const map4 = [
+export const mapDoNotCollectALetterFromTheSameLocationTwice = [
   [" ", " ", " ", " ", " ", "+", "-", "O", "-", "N", "-", "+", " ", " "],
   [" ", " ", " ", " ", " ", "|", " ", " ", " ", " ", " ", "|", " ", " "],
   [" ", " ", " ", " ", " ", "|", " ", " ", " ", "+", "-", "I", "-", "+"],
@@ -37,7 +37,7 @@ export const map4 = [
 ];
 
 // keep direction, even in a compact space
-export const map5 = [
+export const mapKeepDirectionEvenInACompactSpace = [
   [" ", "+", "-", "L", "-", "+", " ", " "],
   [" ", "|", " ", " ", "+", "A", "-", "+"],
   ["@", "B", "+", " ", "+", "+", " ", "H"],
@@ -45,7 +45,7 @@ export const map5 = [
 ];
 
 // ignore stuff after end of path
-export const map6 = [
+export const mapIgnoreStuffAfterEndOfPath = [
   [
     " ",
     " ",
@@ -109,7 +109,7 @@ export const map6 = [
 ];
 
 //  missing start character
-export const map7 = [
+export const mapMissingStartCharacter = [
   [" ", " ", " ", " ", " ", "-", "A", "-", "-", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", "x", "-", "B", "-", "+", " ", " ", " ", "C"],
@@ -118,7 +118,7 @@ export const map7 = [
 ];
 
 // missing end character
-export const map8 = [
+export const mapMissingEndCharacter = [
   [" ", " ", " ", "@", "-", "-", "A", "-", "-", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", " ", " ", "B", "-", "+", " ", " ", " ", "C"],
@@ -127,7 +127,7 @@ export const map8 = [
 ];
 
 // multiple start characters
-export const map9 = [
+export const mapMultipleStartCharacters = [
   [" ", " ", " ", "@", "-", "-", "A", "-", "@", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", "x", "-", "B", "-", "+", " ", " ", " ", "C"],
@@ -136,7 +136,7 @@ export const map9 = [
 ];
 
 // multiple start characters
-export const map10 = [
+export const mapMultipleStartCharacters2 = [
   [" ", " ", " ", "@", "-", "-", "A", "-", "-", "-", "+"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "C"],
@@ -145,7 +145,7 @@ export const map10 = [
 ];
 
 // multiple start characters
-export const map11 = [
+export const mapMultipleStartCharacters3 = [
   [" ", " ", " ", "@", "-", "-", "A", "-", "-", "x"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
   [" ", " ", "x", "-", "B", "-", "+", " ", " ", " "],
@@ -154,7 +154,7 @@ export const map11 = [
 ];
 
 // fork in path
-export const map12 = [
+export const mapForkInPath = [
   [" ", " ", " ", " ", " ", " ", " ", " ", "x", "-", "B"],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "|"],
   [" ", " ", " ", "@", "-", "-", "A", "-", "-", "-", "+"],
@@ -165,7 +165,7 @@ export const map12 = [
 ];
 
 // broken path
-export const map13 = [
+export const mapBrokenPath = [
   [" ", " ", " ", "@", "-", "-", "A", "-", "+", " ", " "],
   [" ", " ", " ", " ", " ", " ", " ", " ", "|", " ", " "],
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -173,13 +173,13 @@ export const map13 = [
 ];
 
 // multiple starting paths
-export const map14 = [[" ", "x", "-", "B", "-", "@", "-", "A", "-", "x"]];
+export const mapMultipleStartingPaths = [[" ", "x", "-", "B", "-", "@", "-", "A", "-", "x"]];
 
 // fake turn
-export const map15 = [["@", "-", "A", "-", "+", "-", "B", "-", "x"]];
+export const mapFakeTurn = [["@", "-", "A", "-", "+", "-", "B", "-", "x"]];
 
 // vretical fake turn
-export const map16 = [
+export const mapVerticalFakeTurn = [
   ["@"],
   ["-"],
   ["A"],
@@ -194,7 +194,7 @@ export const map16 = [
 //- the only valid characters are all uppercase letters (`A`-`Z`) and other characters appearing in the example maps;
 //  anything else found must result in an error
 
-export const map17 = [
+export const mapInvalidCharacter = [
   ["@"],
   ["-"],
   ["a"],
