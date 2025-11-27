@@ -1,4 +1,3 @@
-// TODO: remove console.logs
 function isDirectionCharacter(character: string): boolean {
   return character === "-" || character === "|" || character === "+";
 }
@@ -7,7 +6,7 @@ function isCapitalLetterCharacter(character: string): boolean {
   return character >= "A" && character <= "Z";
 }
 
-function isValidCharacter(character: string): boolean {
+function isValidForwardCharacter(character: string): boolean {
   return (
     isDirectionCharacter(character) ||
     isCapitalLetterCharacter(character) ||
@@ -56,28 +55,28 @@ function firstStep(
   const validDirections: { row: number; column: number }[] = [];
 
   const charDown = map[currentStep.row + 1]?.[currentStep.column];
-  if (charDown && isValidCharacter(charDown)) {
+  if (charDown && isValidForwardCharacter(charDown)) {
     validDirections.push({
       row: currentStep.row + 1,
       column: currentStep.column,
     });
   }
   const charUp = map[currentStep.row - 1]?.[currentStep.column];
-  if (charUp && isValidCharacter(charUp)) {
+  if (charUp && isValidForwardCharacter(charUp)) {
     validDirections.push({
       row: currentStep.row - 1,
       column: currentStep.column,
     });
   }
   const charRight = map[currentStep.row]?.[currentStep.column + 1];
-  if (charRight && isValidCharacter(charRight)) {
+  if (charRight && isValidForwardCharacter(charRight)) {
     validDirections.push({
       row: currentStep.row,
       column: currentStep.column + 1,
     });
   }
   const charLeft = map[currentStep.row]?.[currentStep.column - 1];
-  if (charLeft && isValidCharacter(charLeft)) {
+  if (charLeft && isValidForwardCharacter(charLeft)) {
     validDirections.push({
       row: currentStep.row,
       column: currentStep.column - 1,
@@ -112,14 +111,14 @@ function intersectionStep(
     if (
       charDown &&
       charUp &&
-      isValidCharacter(charDown) &&
-      isValidCharacter(charUp)
+      isValidForwardCharacter(charDown) &&
+      isValidForwardCharacter(charUp)
     ) {
       return new Error("Fork in path");
-    } else if (charDown && isValidCharacter(charDown)) {
+    } else if (charDown && isValidForwardCharacter(charDown)) {
       // turn down
       return { row: currentStep.row + 1, column: currentStep.column };
-    } else if (charUp && isValidCharacter(charUp)) {
+    } else if (charUp && isValidForwardCharacter(charUp)) {
       // turn up
       return { row: currentStep.row - 1, column: currentStep.column };
     }
@@ -138,14 +137,14 @@ function intersectionStep(
     if (
       charRight &&
       charLeft &&
-      isValidCharacter(charRight) &&
-      isValidCharacter(charLeft)
+      isValidForwardCharacter(charRight) &&
+      isValidForwardCharacter(charLeft)
     ) {
       return new Error("Fork in path");
-    } else if (charRight && isValidCharacter(charRight)) {
+    } else if (charRight && isValidForwardCharacter(charRight)) {
       // turn right
       return { row: currentStep.row, column: currentStep.column + 1 };
-    } else if (charLeft && isValidCharacter(charLeft)) {
+    } else if (charLeft && isValidForwardCharacter(charLeft)) {
       // turn left
       return { row: currentStep.row, column: currentStep.column - 1 };
     }
@@ -168,7 +167,7 @@ function forwardStep(
     prevStep.column === currentStep.column
   ) {
     const char = map[currentStep.row + 1]?.[currentStep.column];
-    if (char && isValidCharacter(char)) {
+    if (char && isValidForwardCharacter(char)) {
       // down
       return { row: currentStep.row + 1, column: currentStep.column };
     }
@@ -180,7 +179,7 @@ function forwardStep(
     prevStep.column == currentStep.column
   ) {
     const char = map[currentStep.row - 1]?.[currentStep.column];
-    if (char && isValidCharacter(char)) {
+    if (char && isValidForwardCharacter(char)) {
       // up
       return { row: currentStep.row - 1, column: currentStep.column };
     }
@@ -191,7 +190,7 @@ function forwardStep(
     prevStep.column + 1 == currentStep.column
   ) {
     const char = map[currentStep.row]?.[currentStep.column + 1];
-    if (char && isValidCharacter(char)) {
+    if (char && isValidForwardCharacter(char)) {
       // right
       return { row: currentStep.row, column: currentStep.column + 1 };
     }
@@ -202,7 +201,7 @@ function forwardStep(
     prevStep.column - 1 == currentStep.column
   ) {
     const char = map[currentStep.row]?.[currentStep.column - 1];
-    if (char && isValidCharacter(char)) {
+    if (char && isValidForwardCharacter(char)) {
       // left
       return { row: currentStep.row, column: currentStep.column - 1 };
     }
@@ -275,25 +274,7 @@ export async function main(
 
   for (let i = startIndex?.row; endNotReached; ) {
     for (let j = startIndex?.column; endNotReached; ) {
-      if (i === endIndex?.row && j === endIndex?.column) {
-        console.log(`end reached here 1`);
-        endNotReached = false;
-        path.push(map[i!]?.[j!]!);
-        const wasAlreadyVisited = PATH.some(
-          (p) =>
-            p.row === i! && p.column === j! && p.character === map[i!]?.[j!]!
-        );
-        PATH.push({
-          character: map[i!]?.[j!]!,
-          row: i!,
-          column: j!,
-        });
-        const char = map[i!]?.[j!];
-        if (char && isCapitalLetterCharacter(char) && !wasAlreadyVisited) {
-          letters.push(char);
-        }
-        return { path, letters };
-      }
+
       const nextStep = getNextStepIndices(
         map,
         { row: i!, column: j! },
@@ -303,18 +284,6 @@ export async function main(
         prevStep = { row: i!, column: j! };
         i = nextStep.row;
         j = nextStep.column;
-        if (i === endIndex?.row && j === endIndex?.column) {
-          console.log(`end reached here 2`);
-          endNotReached = false;
-          path.push(map[endIndex?.row!]?.[endIndex?.column!]!);
-          PATH.push({
-            character: map[endIndex?.row!]?.[endIndex?.column!]!,
-            row: endIndex?.row!,
-            column: endIndex?.column!,
-          });
-          if (error) throw error;
-          return { path, letters };
-        }
 
         path.push(map[i]?.[j]!);
         const wasAlreadyVisited = PATH.some(
@@ -325,6 +294,14 @@ export async function main(
         const char = map[i]?.[j];
         if (char && isCapitalLetterCharacter(char) && !wasAlreadyVisited) {
           letters.push(char);
+        }
+
+        if (i === endIndex?.row && j === endIndex?.column) {
+          // end reached here
+          endNotReached = false;
+          if (error) throw error;
+
+          return { path, letters };
         }
         // await delay(1000); // remove delay and async await
       } else if (error) {

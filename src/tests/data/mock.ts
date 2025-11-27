@@ -173,10 +173,14 @@ export const mapBrokenPath = [
 ];
 
 // multiple starting paths
-export const mapMultipleStartingPaths = [[" ", "x", "-", "B", "-", "@", "-", "A", "-", "x"]];
+export const mapMultipleStartingPaths = [
+  [" ", "x", "-", "B", "-", "@", "-", "A", "-", "x"],
+];
 
 // fake turn
-export const mapFakeTurn = [["@", "-", "A", "-", "+", "-", "B", "-", "x"]];
+export const mapFakeTurn = [
+  ["@", "-", "A", "-", "+", "-", "B", "-", "x"]
+];
 
 // vretical fake turn
 export const mapVerticalFakeTurn = [
@@ -199,10 +203,14 @@ export const mapInvalidCharacter = [
   ["-"],
   ["a"],
   ["-"],
-  ["+"],
-  ["-"],
-  ["b"],
-  ["-"],
-  ["x"],
-  [" "],
+  ["x"]
+];
+
+export const mapFirstStepIntersection = [
+  [" ", " ", " ", "+","-", "A", " ", " ", " ", " ", " "],
+  [" ", " ", " ", "|", " ", "|", " ", " ", " ", " ", " "],
+  [" ", " ", " ", "|", " ", "|", " ", " ", " ", " ", " "],
+  [" ", " ", "@", "+", " ", "x", " ", " ", " ", " ", " "],
+  [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+  [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 ];

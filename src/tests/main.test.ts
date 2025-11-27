@@ -18,6 +18,7 @@ import {
   mapFakeTurn,
   mapVerticalFakeTurn,
   mapInvalidCharacter,
+  mapFirstStepIntersection,
 } from "../tests/data/mock.js";
 
 describe("Valid maps tests", () => {
@@ -56,6 +57,11 @@ describe("Valid maps tests", () => {
     const result = await main(mapIgnoreStuffAfterEndOfPath);
     expect(result.path.join("")).toBe("@-A--+|+-B--x");
     expect(result.letters.join("")).toBe("AB");
+  });
+  it("should match path: first step intersection", async () => {
+    const result = await main(mapFirstStepIntersection);
+    expect(result.path.join("")).toBe("@+||+-A||x");
+    expect(result.letters.join("")).toBe("A");
   });
 });
 
