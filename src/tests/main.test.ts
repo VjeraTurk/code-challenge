@@ -24,25 +24,25 @@ import {
 describe("Valid maps tests", () => {
   it("should match path: a basic example", async () => {
     const result = await main(mapBasicExample);
-    expect(result.path.join("")).toBe("@---A---+|C|+---+|+-B-x");
+    expect(result.characterPath.join("")).toBe("@---A---+|C|+---+|+-B-x");
     expect(result.letters.join("")).toBe("ACB");
   });
 
   it("should match path: go straight through intersections", async () => {
     const result = await main(mapGoStraightThroughIntersections);
-    expect(result.path.join("")).toBe("@|A+---B--+|+--C-+|-||+---D--+|x");
+    expect(result.characterPath.join("")).toBe("@|A+---B--+|+--C-+|-||+---D--+|x");
     expect(result.letters.join("")).toBe("ABCD");
   });
 
   it("should match path: letters may be found on turns", async () => {
     const result = await main(mapLettersMayBeFoundOnTurns);
-    expect(result.path.join("")).toBe("@---A---+|||C---+|+-B-x");
+    expect(result.characterPath.join("")).toBe("@---A---+|||C---+|+-B-x");
     expect(result.letters.join("")).toBe("ACB");
   });
 
   it("should match path: do not collect a letter from the same location twice", async () => {
     const result = await main(mapDoNotCollectALetterFromTheSameLocationTwice);
-    expect(result.path.join("")).toBe(
+    expect(result.characterPath.join("")).toBe(
       "@-G-O-+|+-+|O||+-O-N-+|I|+-+|+-I-+|ES|x"
     );
     expect(result.letters.join("")).toBe("GOONIES");
@@ -50,17 +50,17 @@ describe("Valid maps tests", () => {
 
   it("should match path: keep direction, even in a compact space", async () => {
     const result = await main(mapKeepDirectionEvenInACompactSpace);
-    expect(result.path.join("")).toBe("@B+++B|+-L-+A+++A-+Hx");
+    expect(result.characterPath.join("")).toBe("@B+++B|+-L-+A+++A-+Hx");
     expect(result.letters.join("")).toBe("BLAH");
   });
-  it("should match path: ignore stuff after end of path", async () => {
+  it("should match path: ignore stuff after end of characterPath", async () => {
     const result = await main(mapIgnoreStuffAfterEndOfPath);
-    expect(result.path.join("")).toBe("@-A--+|+-B--x");
+    expect(result.characterPath.join("")).toBe("@-A--+|+-B--x");
     expect(result.letters.join("")).toBe("AB");
   });
   it("should match path: first step intersection", async () => {
     const result = await main(mapFirstStepIntersection);
-    expect(result.path.join("")).toBe("@+||+-A||x");
+    expect(result.characterPath.join("")).toBe("@+||+-A||x");
     expect(result.letters.join("")).toBe("A");
   });
 });
