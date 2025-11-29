@@ -18,7 +18,7 @@ function isIntersectionCharacter(character: string): boolean {
   return character === "+";
 }
 
-function indexWasVisited(
+function isIndexVisited(
   characterPath: { row: number; column: number }[],
   row: number,
   column: number
@@ -45,7 +45,7 @@ function getCharacterIndices(
   return indices;
 }
 
-function firstStep(
+function getFirstStepIndices(
   map: string[][],
   currentStep: { row: number; column: number }
 ): { row: number; column: number } | Error {
@@ -90,7 +90,7 @@ function firstStep(
   return validDirections[0]!;
 }
 
-function intersectionStep(
+function getIntersectionStep(
   map: string[][],
   currentStep: { row: number; column: number },
   previousStep: { row: number; column: number }
@@ -151,7 +151,7 @@ function intersectionStep(
   return new Error("Fake turn");
 }
 
-function forwardStep(
+function getStepForwardIndices(
   map: string[][],
   currentStep: { row: number; column: number },
   previousStep: { row: number; column: number }
@@ -213,12 +213,12 @@ function getNextStepIndices(
   previousStep: { row: number; column: number } | null
 ): { row: number; column: number } | Error {
   if (!previousStep) {
-    return firstStep(map, currentStep);
+    return getFirstStepIndices(map, currentStep);
   }
   const currentChar = map[currentStep.row]?.[currentStep.column];
 
   if (currentChar && !isIntersectionCharacter(currentChar)) {
-    const forwardStepResult = forwardStep(map, currentStep, previousStep);
+    const forwardStepResult = getStepForwardIndices(map, currentStep, previousStep);
     if (forwardStepResult) return forwardStepResult;
     // else it's letter as an intersection
   }
@@ -227,7 +227,7 @@ function getNextStepIndices(
     (currentChar && isIntersectionCharacter(currentChar)) ||
     (currentChar && isCapitalLetterCharacter(currentChar))
   ) {
-    return intersectionStep(map, currentStep, previousStep);
+    return getIntersectionStep(map, currentStep, previousStep);
   }
 
   // TODO: handle more errors here?
@@ -270,8 +270,10 @@ export async function main(
     column: startIndex?.column!,
   });
 
-  for (let i = startIndex?.row; endNotReached; ) {
-    for (let j = startIndex?.column; endNotReached; ) {
+  let i = startIndex?.row!;
+  let j = startIndex?.column!;
+
+   while (endNotReached) {
       const nextStep = getNextStepIndices(
         map,
         { row: i!, column: j! },
@@ -283,7 +285,7 @@ export async function main(
         j = nextStep.column;
 
         characterPath.push(map[i]?.[j]!);
-        const wasVisitedResult = indexWasVisited(visitedIndices, i!, j!);
+        const wasVisitedResult = isIndexVisited(visitedIndices, i!, j!);
         visitedIndices.push({ row: i!, column: j! });
         const char = map[i]?.[j];
         if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
@@ -302,6 +304,6 @@ export async function main(
         throw error;
       } else throw nextStep; // TODO: error prioritization
     }
-  }
+
   return { characterPath, letters };
 }
