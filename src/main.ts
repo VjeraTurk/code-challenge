@@ -10,8 +10,12 @@ function isValidForwardCharacter(character: string): boolean {
   return (
     isDirectionCharacter(character) ||
     isCapitalLetterCharacter(character) ||
-    character === "x"
+    isEndCharacter(character)
   );
+}
+
+function isEndCharacter(character: string): boolean {
+  return character === "x";
 }
 
 function isIntersectionCharacter(character: string): boolean {
@@ -19,19 +23,23 @@ function isIntersectionCharacter(character: string): boolean {
 }
 
 function isIndexVisited(
-  characterPath: { row: number; column: number }[],
+  characterPath: Position[],
   row: number,
   column: number
 ): boolean {
   return characterPath.some((p) => p.row === row && p.column === column);
 }
 
+
+type Position = { row: number; column: number };
+type Direction = { vertical: number; horizontal: number };
+
 function getCharacterIndices(
   map: string[][],
   character: string
-): { row: number; column: number }[] {
+): Position[] {
   if (!map || !map.length) return [];
-  const indices: { row: number; column: number }[] = [];
+  const indices: Position[] = [];
 
   for (let i = 0; i < map.length; i++) {
     const row = map[i];
@@ -45,212 +53,145 @@ function getCharacterIndices(
   return indices;
 }
 
+function getDirection(from: Position, to: Position): Direction {
+  const verticalDiff : number = to.row - from.row;
+  const horizontalDiff : number = to.column - from.column;
+  return { vertical: verticalDiff, horizontal: horizontalDiff };
+}
+
+const DIRECTIONS: Direction[] = [
+  { vertical: -1, horizontal: 0 },  // up
+  { vertical: 1, horizontal: 0 },   // down
+  { vertical: 0, horizontal: -1 },   // left
+  { vertical: 0, horizontal: 1 }     // right
+];
+
+function getNeighbors(
+  map: string[][],
+  position: Position,
+  isValid: (char: string) => boolean
+): Position[] {
+  return DIRECTIONS
+    .map(dir => ({ row: position.row + dir.vertical, column: position.column + dir.horizontal }))
+    .filter(pos => {
+      const char = map[pos.row]?.[pos.column];
+      return char && isValid(char);
+    });
+}
+
 function getFirstStepIndices(
   map: string[][],
-  currentStep: { row: number; column: number }
-): { row: number; column: number } | Error {
-  const validDirections: { row: number; column: number }[] = [];
+  currentPosition: Position
+): Position | Error {
+  const validNeighbors =  getNeighbors(map, currentPosition, isValidForwardCharacter);
 
-  const charDown = map[currentStep.row + 1]?.[currentStep.column];
-  if (charDown && isValidForwardCharacter(charDown)) {
-    validDirections.push({
-      row: currentStep.row + 1,
-      column: currentStep.column,
-    });
-  }
-  const charUp = map[currentStep.row - 1]?.[currentStep.column];
-  if (charUp && isValidForwardCharacter(charUp)) {
-    validDirections.push({
-      row: currentStep.row - 1,
-      column: currentStep.column,
-    });
-  }
-  const charRight = map[currentStep.row]?.[currentStep.column + 1];
-  if (charRight && isValidForwardCharacter(charRight)) {
-    validDirections.push({
-      row: currentStep.row,
-      column: currentStep.column + 1,
-    });
-  }
-  const charLeft = map[currentStep.row]?.[currentStep.column - 1];
-  if (charLeft && isValidForwardCharacter(charLeft)) {
-    validDirections.push({
-      row: currentStep.row,
-      column: currentStep.column - 1,
-    });
-  }
-
-  if (validDirections.length === 0) {
+  if (validNeighbors.length === 0) {
     return new Error("Broken path");
   }
-  if (validDirections.length > 1) {
+  if (validNeighbors.length > 1) {
     return new Error("Multiple starting paths");
   }
-  // At this point, validDirections.length === 1, so [0] is guaranteed to exist
-  return validDirections[0]!;
+  return validNeighbors[0]!;
+}
+
+function isMovingHorizontally(previousPosition: Position, nextPosition: Position): boolean {
+  return previousPosition.row === nextPosition.row;
+}
+
+function isMovingVertically(previousPosition: Position, nextPosition: Position): boolean {
+  return previousPosition.column === nextPosition.column;
 }
 
 function getIntersectionStep(
   map: string[][],
-  currentStep: { row: number; column: number },
-  previousStep: { row: number; column: number }
-): { row: number; column: number } | Error {
-  // intersection
-  if (
-    (previousStep?.row == currentStep.row &&
-      previousStep.column + 1 == currentStep.column) ||
-    (previousStep?.row == currentStep.row &&
-      previousStep?.column - 1 == currentStep.column)
-  ) {
-    // direction was right or left
-    const charDown = map[currentStep.row + 1]?.[currentStep.column];
-    const charUp = map[currentStep.row - 1]?.[currentStep.column];
-    if (
-      charDown &&
-      charUp &&
-      isValidForwardCharacter(charDown) &&
-      isValidForwardCharacter(charUp)
-    ) {
-      return new Error("Fork in path");
-    } else if (charDown && isValidForwardCharacter(charDown)) {
-      // turn down
-      return { row: currentStep.row + 1, column: currentStep.column };
-    } else if (charUp && isValidForwardCharacter(charUp)) {
-      // turn up
-      return { row: currentStep.row - 1, column: currentStep.column };
+  currentPosition: Position,
+  previousPosition: Position
+): Position | Error {
+
+  const cameFromHorizontal : boolean = isMovingHorizontally(previousPosition, currentPosition);
+  const allNeighbors : Position[] = getNeighbors(map, currentPosition, isValidForwardCharacter);
+
+  // If we came from horizontal, only check vertical neighbors (up/down)
+  // If we came from vertical, only check horizontal neighbors (left/right)
+  const validTurns : Position[] = allNeighbors.filter(neighbor => {
+    if (cameFromHorizontal) {
+      return isMovingVertically(currentPosition, neighbor);
+    } else {
+      return isMovingHorizontally(currentPosition, neighbor);
     }
-    return new Error("Fake turn");
-  } else if (
-    // direction was up or down
-    (previousStep?.row &&
-      previousStep.row + 1 == currentStep.row &&
-      previousStep?.column == currentStep.column) ||
-    (previousStep?.row &&
-      previousStep?.row - 1 == currentStep.row &&
-      previousStep?.column == currentStep.column)
-  ) {
-    const charRight = map[currentStep.row]?.[currentStep.column + 1];
-    const charLeft = map[currentStep.row]?.[currentStep.column - 1];
-    if (
-      charRight &&
-      charLeft &&
-      isValidForwardCharacter(charRight) &&
-      isValidForwardCharacter(charLeft)
-    ) {
-      return new Error("Fork in path");
-    } else if (charRight && isValidForwardCharacter(charRight)) {
-      // turn right
-      return { row: currentStep.row, column: currentStep.column + 1 };
-    } else if (charLeft && isValidForwardCharacter(charLeft)) {
-      // turn left
-      return { row: currentStep.row, column: currentStep.column - 1 };
-    }
+  });
+
+  if (validTurns.length === 0) {
     return new Error("Fake turn");
   }
-  //Test this case
-  return new Error("Fake turn");
+  if (validTurns.length > 1) {
+    return new Error("Fork in path");
+  }
+
+  return validTurns[0]!;
 }
 
 function getStepForwardIndices(
   map: string[][],
-  currentStep: { row: number; column: number },
-  previousStep: { row: number; column: number }
-): { row: number; column: number } | undefined {
-  // forward step
-  if (
-    // down
-    previousStep &&
-    previousStep.row + 1 === currentStep.row &&
-    previousStep.column === currentStep.column
-  ) {
-    const char = map[currentStep.row + 1]?.[currentStep.column];
-    if (char && isValidForwardCharacter(char)) {
-      // down
-      return { row: currentStep.row + 1, column: currentStep.column };
-    }
+  currentPosition: Position,
+  previousPosition: Position
+): Position | undefined {
+  const direction : Direction = getDirection(previousPosition, currentPosition);
+
+  // Continue in the same direction
+  const nextPosition : Position = {
+    row: currentPosition.row + direction.vertical,
+    column: currentPosition.column + direction.horizontal
+  };
+
+  const char : string | undefined = map[nextPosition.row]?.[nextPosition.column];
+  if (char && isValidForwardCharacter(char)) {
+    return nextPosition;
   }
-  if (
-    // up
-    previousStep &&
-    previousStep.row - 1 == currentStep.row &&
-    previousStep.column == currentStep.column
-  ) {
-    const char = map[currentStep.row - 1]?.[currentStep.column];
-    if (char && isValidForwardCharacter(char)) {
-      // up
-      return { row: currentStep.row - 1, column: currentStep.column };
-    }
-  }
-  if (
-    previousStep &&
-    previousStep.row == currentStep.row &&
-    previousStep.column + 1 == currentStep.column
-  ) {
-    const char = map[currentStep.row]?.[currentStep.column + 1];
-    if (char && isValidForwardCharacter(char)) {
-      // right
-      return { row: currentStep.row, column: currentStep.column + 1 };
-    }
-  }
-  if (
-    previousStep &&
-    previousStep.row == currentStep.row &&
-    previousStep.column - 1 == currentStep.column
-  ) {
-    const char = map[currentStep.row]?.[currentStep.column - 1];
-    if (char && isValidForwardCharacter(char)) {
-      // left
-      return { row: currentStep.row, column: currentStep.column - 1 };
-    }
-  }
+
   // no valid direction found
   return undefined;
 }
 
+
 function getNextStepIndices(
   map: string[][],
-  currentStep: { row: number; column: number },
-  previousStep: { row: number; column: number } | null
-): { row: number; column: number } | Error {
-  if (!previousStep) {
-    return getFirstStepIndices(map, currentStep);
+  currentPosition: Position,
+  previousPosition: Position | null
+): Position | Error {
+  if (!previousPosition) {
+    return getFirstStepIndices(map, currentPosition);
   }
-  const currentChar = map[currentStep.row]?.[currentStep.column];
+  const currentChar = map[currentPosition.row]?.[currentPosition.column];
 
   if (currentChar && !isIntersectionCharacter(currentChar)) {
-    const forwardStepResult = getStepForwardIndices(map, currentStep, previousStep);
+    const forwardStepResult = getStepForwardIndices(map, currentPosition, previousPosition);
     if (forwardStepResult) return forwardStepResult;
-    // else it's letter as an intersection
+    // else it's a letter as an intersection
   }
 
-  if (
-    (currentChar && isIntersectionCharacter(currentChar)) ||
-    (currentChar && isCapitalLetterCharacter(currentChar))
-  ) {
-    return getIntersectionStep(map, currentStep, previousStep);
+  if ((currentChar && isIntersectionCharacter(currentChar)) ||
+    (currentChar && isCapitalLetterCharacter(currentChar))) {
+    return getIntersectionStep(map, currentPosition, previousPosition);
   }
 
-  // TODO: handle more errors here?
   return new Error("Broken path");
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export async function main(
   map: string[][]
 ): Promise<{ characterPath: string[]; letters: string[] }> {
-  // TODO: use single varable to store the result
+
   let characterPath: string[] = [];
   let letters: string[] = [];
 
-  let visitedIndices: { row: number; column: number }[] = [];
+  let visitedIndices: Position[] = [];
 
   let error: Error | null = null;
 
-  const start = getCharacterIndices(map, "@");
-  const end = getCharacterIndices(map, "x");
+  const start: Position[] = getCharacterIndices(map, "@");
+  const end: Position[] = getCharacterIndices(map, "x");
 
   if (start.length < 1 || end.length < 1) {
     error = new Error("Start or end not found");
@@ -258,11 +199,11 @@ export async function main(
     error = new Error("Multiple start or end characters found");
   }
 
-  const startIndex = start[0];
-  const endIndex = end[0];
+  const startIndex: Position | undefined = start[0];
+  const endIndex: Position | undefined = end[0];
 
   let endNotReached = true;
-  let previousStep: { row: number; column: number } | null = null;
+  let previousPosition: Position | null = null;
 
   characterPath.push(map[startIndex?.row!]?.[startIndex?.column!]!);
   visitedIndices.push({
@@ -273,37 +214,38 @@ export async function main(
   let i = startIndex?.row!;
   let j = startIndex?.column!;
 
-   while (endNotReached) {
-      const nextStep = getNextStepIndices(
-        map,
-        { row: i!, column: j! },
-        previousStep
-      );
-      if (!(nextStep instanceof Error)) {
-        previousStep = { row: i!, column: j! };
-        i = nextStep.row;
-        j = nextStep.column;
+  while (endNotReached) {
+    const nextStep = getNextStepIndices(
+      map,
+      { row: i!, column: j! },
+      previousPosition
+    );
+    if (!(nextStep instanceof Error)) {
+      previousPosition = { row: i!, column: j! };
+      i = nextStep.row;
+      j = nextStep.column;
 
-        characterPath.push(map[i]?.[j]!);
-        const wasVisitedResult = isIndexVisited(visitedIndices, i!, j!);
-        visitedIndices.push({ row: i!, column: j! });
-        const char = map[i]?.[j];
-        if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
-          letters.push(char);
-        }
+      characterPath.push(map[i]?.[j]!);
+      const wasVisitedResult = isIndexVisited(visitedIndices, i!, j!);
+      visitedIndices.push({ row: i!, column: j! });
+      const char = map[i]?.[j];
+      if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
+        letters.push(char);
+      }
 
-        if (i === endIndex?.row && j === endIndex?.column) {
-          // end reached here
-          endNotReached = false;
-          if (error) throw error;
-
-          return { characterPath, letters };
-        }
-        // await delay(1000); // remove delay and async await
-      } else if (error) {
-        throw error;
-      } else throw nextStep; // TODO: error prioritization
+      if (i === endIndex?.row && j === endIndex?.column) {
+        endNotReached = false;
+      }
+    } else if (error) {
+      throw error;
+    } else {
+      throw nextStep; // TODO: error prioritization
     }
+  }
+
+  if (error) {
+    throw error;
+  }
 
   return { characterPath, letters };
 }
