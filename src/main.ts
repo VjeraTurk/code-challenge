@@ -1,8 +1,8 @@
 import type { Position, Map } from "./types.js";
-import { MAP_CHARACTERS, ERROR_MESSAGES } from "./constants.js";
 import { isCapitalLetterCharacter } from "./utils/characterValidation.js";
-import { getCharacterIndices, isIndexVisited } from "./utils/mapNavigation.js";
+import { isIndexVisited } from "./utils/mapNavigation.js";
 import { getNextStepIndices } from "./utils/pathfinding.js";
+import { validateMapStartAndEnd } from "./utils/validation.js";
 
 export async function main(
   map: Map
@@ -12,19 +12,12 @@ export async function main(
 
   let visitedIndices: Position[] = [];
 
-  let error: Error | null = null;
-
-  const start: Position[] = getCharacterIndices(map, MAP_CHARACTERS.START);
-  const end: Position[] = getCharacterIndices(map, MAP_CHARACTERS.END);
-
-  if (start.length < 1 || end.length < 1) {
-    error = new Error(ERROR_MESSAGES.START_OR_END_NOT_FOUND);
-  } else if (start.length > 1 || end.length > 1) {
-    error = new Error(ERROR_MESSAGES.MULTIPLE_START_OR_END);
+  const validation = validateMapStartAndEnd(map);
+  if (validation instanceof Error) {
+    throw validation;
   }
 
-  const startIndex: Position | undefined = start[0];
-  const endIndex: Position | undefined = end[0];
+  const { start: startIndex, end: endIndex } = validation;
 
   let endNotReached = true;
   let previousPosition: Position | null = null;
@@ -60,15 +53,9 @@ export async function main(
       if (i === endIndex?.row && j === endIndex?.column) {
         endNotReached = false;
       }
-    } else if (error) {
-      throw error;
     } else {
-      throw nextStep; // TODO: error prioritization
+      throw nextStep;
     }
-  }
-
-  if (error) {
-    throw error;
   }
 
   return { characterPath, letters };
