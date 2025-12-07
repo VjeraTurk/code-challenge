@@ -1,4 +1,5 @@
 import type { Position, Direction, Map } from "../types.js";
+import { ERROR_MESSAGES } from "../constants.js";
 import {
   isCapitalLetterCharacter,
   isIntersectionCharacter,
@@ -31,10 +32,10 @@ export function getFirstStepIndices(
   );
 
   if (validNeighbors.length === 0) {
-    return new Error("Broken path");
+    return new Error(ERROR_MESSAGES.BROKEN_PATH);
   }
   if (validNeighbors.length > 1) {
-    return new Error("Multiple starting paths");
+    return new Error(ERROR_MESSAGES.MULTIPLE_STARTING_PATHS);
   }
   return validNeighbors[0]!;
 }
@@ -65,10 +66,10 @@ export function getIntersectionStep(
   });
 
   if (validTurns.length === 0) {
-    return new Error("Fake turn");
+    return new Error(ERROR_MESSAGES.FAKE_TURN);
   }
   if (validTurns.length > 1) {
-    return new Error("Fork in path");
+    return new Error(ERROR_MESSAGES.FORK_IN_PATH);
   }
 
   return validTurns[0]!;
@@ -123,5 +124,5 @@ export function getNextStepIndices(
     return getIntersectionStep(map, currentPosition, previousPosition);
   }
 
-  return new Error("Broken path");
+  return new Error(ERROR_MESSAGES.BROKEN_PATH);
 }

@@ -1,4 +1,5 @@
 import type { Position, Map } from "./types.js";
+import { MAP_CHARACTERS, ERROR_MESSAGES } from "./constants.js";
 import { isCapitalLetterCharacter } from "./utils/characterValidation.js";
 import { getCharacterIndices, isIndexVisited } from "./utils/mapNavigation.js";
 import { getNextStepIndices } from "./utils/pathfinding.js";
@@ -13,13 +14,13 @@ export async function main(
 
   let error: Error | null = null;
 
-  const start: Position[] = getCharacterIndices(map, "@");
-  const end: Position[] = getCharacterIndices(map, "x");
+  const start: Position[] = getCharacterIndices(map, MAP_CHARACTERS.START);
+  const end: Position[] = getCharacterIndices(map, MAP_CHARACTERS.END);
 
   if (start.length < 1 || end.length < 1) {
-    error = new Error("Start or end not found");
+    error = new Error(ERROR_MESSAGES.START_OR_END_NOT_FOUND);
   } else if (start.length > 1 || end.length > 1) {
-    error = new Error("Multiple start or end characters found");
+    error = new Error(ERROR_MESSAGES.MULTIPLE_START_OR_END);
   }
 
   const startIndex: Position | undefined = start[0];
