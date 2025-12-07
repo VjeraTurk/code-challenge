@@ -13,11 +13,11 @@ export async function main(
   let visitedIndices: Position[] = [];
 
   const validation = validateMapStartAndEnd(map);
-  if (validation instanceof Error) {
-    throw validation;
+  if (!validation.success) {
+    throw validation.error;
   }
 
-  const { start: startIndex, end: endIndex } = validation;
+  const { start: startIndex, end: endIndex } = validation.value;
 
   let endNotReached = true;
   let previousPosition: Position | null = null;
@@ -37,10 +37,10 @@ export async function main(
       { row: i!, column: j! },
       previousPosition
     );
-    if (!(nextStep instanceof Error)) {
+    if (nextStep.success) {
       previousPosition = { row: i!, column: j! };
-      i = nextStep.row;
-      j = nextStep.column;
+      i = nextStep.value.row;
+      j = nextStep.value.column;
 
       characterPath.push(map[i]?.[j]!);
       const wasVisitedResult = isIndexVisited(visitedIndices, i!, j!);
@@ -54,7 +54,7 @@ export async function main(
         endNotReached = false;
       }
     } else {
-      throw nextStep;
+      throw nextStep.error;
     }
   }
 

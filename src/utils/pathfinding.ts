@@ -1,4 +1,4 @@
-import type { Position, Direction, Map } from "../types.js";
+import type { Position, Direction, Map, Result } from "../types.js";
 import { ERROR_MESSAGES } from "../constants.js";
 import {
   isCapitalLetterCharacter,
@@ -24,7 +24,7 @@ export function isMovingVertically(
 export function getFirstStepIndices(
   map: Map,
   currentPosition: Position
-): Position | Error {
+): Result<Position> {
   const validNeighbors = getNeighbors(
     map,
     currentPosition,
@@ -32,19 +32,22 @@ export function getFirstStepIndices(
   );
 
   if (validNeighbors.length === 0) {
-    return new Error(ERROR_MESSAGES.BROKEN_PATH);
+    return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
   }
   if (validNeighbors.length > 1) {
-    return new Error(ERROR_MESSAGES.MULTIPLE_STARTING_PATHS);
+    return {
+      success: false,
+      error: new Error(ERROR_MESSAGES.MULTIPLE_STARTING_PATHS),
+    };
   }
-  return validNeighbors[0]!;
+  return { success: true, value: validNeighbors[0]! };
 }
 
 export function getIntersectionStep(
   map: Map,
   currentPosition: Position,
   previousPosition: Position
-): Position | Error {
+): Result<Position> {
   const cameFromHorizontal: boolean = isMovingHorizontally(
     previousPosition,
     currentPosition
@@ -66,13 +69,13 @@ export function getIntersectionStep(
   });
 
   if (validTurns.length === 0) {
-    return new Error(ERROR_MESSAGES.FAKE_TURN);
+    return { success: false, error: new Error(ERROR_MESSAGES.FAKE_TURN) };
   }
   if (validTurns.length > 1) {
-    return new Error(ERROR_MESSAGES.FORK_IN_PATH);
+    return { success: false, error: new Error(ERROR_MESSAGES.FORK_IN_PATH) };
   }
 
-  return validTurns[0]!;
+  return { success: true, value: validTurns[0]! };
 }
 
 export function getStepForwardIndices(
@@ -101,7 +104,7 @@ export function getNextStepIndices(
   map: Map,
   currentPosition: Position,
   previousPosition: Position | null
-): Position | Error {
+): Result<Position> {
   if (!previousPosition) {
     return getFirstStepIndices(map, currentPosition);
   }
@@ -113,7 +116,9 @@ export function getNextStepIndices(
       currentPosition,
       previousPosition
     );
-    if (forwardStepResult) return forwardStepResult;
+    if (forwardStepResult) {
+      return { success: true, value: forwardStepResult };
+    }
     // else it's a letter as an intersection
   }
 
@@ -124,5 +129,5 @@ export function getNextStepIndices(
     return getIntersectionStep(map, currentPosition, previousPosition);
   }
 
-  return new Error(ERROR_MESSAGES.BROKEN_PATH);
+  return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
 }
