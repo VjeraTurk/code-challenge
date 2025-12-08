@@ -11,14 +11,16 @@ export function isMovingHorizontally(
   previousPosition: Position,
   nextPosition: Position
 ): boolean {
-  return previousPosition.row === nextPosition.row;
+  return previousPosition.row === nextPosition.row
+  && previousPosition.column !== nextPosition.column;
 }
 
 export function isMovingVertically(
   previousPosition: Position,
   nextPosition: Position
 ): boolean {
-  return previousPosition.column === nextPosition.column;
+  return previousPosition.column === nextPosition.column
+  && previousPosition.row !== nextPosition.row;
 }
 
 export function getFirstStepIndices(

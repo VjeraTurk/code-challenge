@@ -24,10 +24,10 @@ describe("pathfinding", () => {
       expect(isMovingHorizontally(previous, next)).toBe(false);
     });
 
-    // TODO: fix this
-    it("should return true when same position (same row)", () => {
+
+    it("should return false when same position (same row and same column)", () => {
       const position: Position = { row: 1, column: 1 };
-      expect(isMovingHorizontally(position, position)).toBe(true);
+      expect(isMovingHorizontally(position, position)).toBe(false);
     });
   });
 
@@ -43,10 +43,10 @@ describe("pathfinding", () => {
       const next: Position = { row: 0, column: 1 };
       expect(isMovingVertically(previous, next)).toBe(false);
     });
- // TODO: fix this
-    it("should return true when same position (same column)", () => {
+
+    it("should return false when same position (same column and same row)", () => {
       const position: Position = { row: 1, column: 1 };
-      expect(isMovingVertically(position, position)).toBe(true);
+      expect(isMovingVertically(position, position)).toBe(false);
     });
   });
 
