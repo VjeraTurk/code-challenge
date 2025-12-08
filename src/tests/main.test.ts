@@ -19,6 +19,7 @@ import {
   mapVerticalFakeTurn,
   mapInvalidCharacter,
   mapFirstStepIntersection,
+  mapNoValidNeighbourstStartingPosition,
 } from "../tests/data/mock.js";
 
 describe("Valid maps tests", () => {
@@ -30,7 +31,9 @@ describe("Valid maps tests", () => {
 
   it("should match path: go straight through intersections", async () => {
     const result = await main(mapGoStraightThroughIntersections);
-    expect(result.characterPath.join("")).toBe("@|A+---B--+|+--C-+|-||+---D--+|x");
+    expect(result.characterPath.join("")).toBe(
+      "@|A+---B--+|+--C-+|-||+---D--+|x"
+    );
     expect(result.letters.join("")).toBe("ABCD");
   });
 
@@ -67,10 +70,14 @@ describe("Valid maps tests", () => {
 
 describe("Invalid maps tests", () => {
   it("should throw error: start or end not found", async () => {
-    await expect(main(mapMissingStartCharacter)).rejects.toThrow("Start or end not found");
+    await expect(main(mapMissingStartCharacter)).rejects.toThrow(
+      "Start or end not found"
+    );
   });
   it("should throw error: missing end character", async () => {
-    await expect(main(mapMissingEndCharacter)).rejects.toThrow("Start or end not found");
+    await expect(main(mapMissingEndCharacter)).rejects.toThrow(
+      "Start or end not found"
+    );
   });
   it("should throw error: multiple start characters", async () => {
     await expect(main(mapMultipleStartCharacters)).rejects.toThrow(
@@ -106,5 +113,10 @@ describe("Invalid maps tests", () => {
 describe("Invalid characters tests", () => {
   it("should throw error: invalid character", async () => {
     await expect(main(mapInvalidCharacter)).rejects.toThrow();
+  });
+  it("should throw error: no valid neighbours at starting position", async () => {
+    await expect(main(mapNoValidNeighbourstStartingPosition)).rejects.toThrow(
+      "Broken path"
+    );
   });
 });

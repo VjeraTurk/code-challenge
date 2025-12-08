@@ -1,5 +1,9 @@
 import type { Position, Direction, Map } from "../types.js";
-import { isValidForwardCharacter } from "./characterValidation.js";
+import { MAP_CHARACTERS } from "../constants.js";
+import {
+  isCapitalLetterCharacter,
+  isEndCharacter,
+} from "./characterValidation.js";
 
 export function getCharacterIndices(map: Map, character: string): Position[] {
   if (!map || !map.length) return [];
@@ -38,10 +42,40 @@ export function getNeighbors(
   return DIRECTIONS.map((dir) => ({
     row: position.row + dir.vertical,
     column: position.column + dir.horizontal,
-  })).filter((pos) => {
-    const char = map[pos.row]?.[pos.column];
-    return char && isValid(char);
-  });
+    direction: dir,
+  }))
+    .filter((pos) => {
+      const char = map[pos.row]?.[pos.column];
+      if (!char || !isValid(char)) {
+        return false;
+      }
+
+      // Check if character matches direction requirements:
+      // - Horizontal neighbors (left/right) must be: -, +, letters, or x
+      // - Vertical neighbors (up/down) must be: |, +, letters, or x
+      const isHorizontal = pos.direction.horizontal !== 0;
+      const isVertical = pos.direction.vertical !== 0;
+
+      // Special characters (+, letters, x) are valid in any direction
+      if (
+        char === MAP_CHARACTERS.INTERSECTION ||
+        isCapitalLetterCharacter(char) ||
+        isEndCharacter(char)
+      ) {
+        return true;
+      }
+
+      // For direction characters, check if they match the direction
+      if (isHorizontal) {
+        // Horizontal direction requires - (horizontal line)
+        return char === MAP_CHARACTERS.HORIZONTAL;
+      }
+      // Vertical direction requires | (vertical line)
+      // Since DIRECTIONS only has horizontal or vertical movements,
+      // if not horizontal, it must be vertical
+      return isVertical && char === MAP_CHARACTERS.VERTICAL;
+    })
+    .map(({ row, column }) => ({ row, column }));
 }
 
 export function isIndexVisited(
