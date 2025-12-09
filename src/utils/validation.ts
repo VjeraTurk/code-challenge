@@ -21,5 +21,14 @@ export function validateMapStartAndEnd(
     };
   }
 
-  return { success: true, value: { start: start[0]!, end: end[0]! } };
+  const startPosition = start[0];
+  const endPosition = end[0];
+  if (!startPosition || !endPosition) {
+    return {
+      success: false,
+      error: new Error(ERROR_MESSAGES.START_OR_END_NOT_FOUND),
+    };
+  }
+
+  return { success: true, value: { start: startPosition, end: endPosition } };
 }

@@ -1,5 +1,6 @@
-import { expect, describe, it, xit } from "@jest/globals";
+import { expect, describe, it, xit, jest } from "@jest/globals";
 import { main } from "../main";
+import type { Map } from "../types";
 import {
   mapBasicExample,
   mapGoStraightThroughIntersections,
@@ -118,5 +119,55 @@ describe("Invalid characters tests", () => {
     await expect(main(mapNoValidNeighbourstStartingPosition)).rejects.toThrow(
       "Broken path"
     );
+  });
+  it("should throw error: start position character not found", async () => {
+    // To trigger line 27, we need validation to pass but character access to fail
+    // This can happen with a jagged array where the row exists but column doesn't
+    // We'll mock validateMapStartAndEnd to return a position that's out of bounds
+    const validateSpy = jest.spyOn(
+      require("../utils/validation"),
+      "validateMapStartAndEnd"
+    );
+
+    validateSpy.mockReturnValueOnce({
+      success: true,
+      value: {
+        start: { row: 0, column: 10 }, // Out of bounds column
+        end: { row: 0, column: 2 },
+      },
+    });
+
+    const map: Map = [["@", "-", "x"]];
+    await expect(main(map)).rejects.toThrow(
+      "Start position character not found"
+    );
+
+    validateSpy.mockRestore();
+  });
+
+  it("should throw error: character not found at current position", async () => {
+    // To trigger line 46, we need to reach a position during traversal where character is undefined
+    // We'll mock getNextStepIndices to return a position that's out of bounds
+    const getNextStepSpy = jest.spyOn(
+      require("../utils/pathfinding"),
+      "getNextStepIndices"
+    );
+
+    getNextStepSpy
+      .mockReturnValueOnce({
+        success: true,
+        value: { row: 0, column: 10 }, // Out of bounds
+      })
+      .mockReturnValueOnce({
+        success: true,
+        value: { row: 0, column: 2 },
+      });
+
+    const map: Map = [["@", "-", "x"]];
+    await expect(main(map)).rejects.toThrow(
+      "Character not found at current position"
+    );
+
+    getNextStepSpy.mockRestore();
   });
 });

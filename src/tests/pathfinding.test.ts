@@ -1,5 +1,6 @@
 import { describe, it, expect, xit, jest } from "@jest/globals";
 import * as pathfindingModule from "../utils/pathfinding";
+import * as mapNavigationModule from "../utils/mapNavigation";
 import {
   isMovingHorizontally,
   isMovingVertically,
@@ -63,6 +64,28 @@ describe("pathfinding", () => {
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
       }
+    });
+    it("should return error when firstNeighbor is undefined", () => {
+      // Test the defensive check at line 60
+      // We need to mock getNeighbors to return an array with undefined element
+      const getNeighborsSpy = jest.spyOn(
+        require("../utils/mapNavigation"),
+        "getNeighbors"
+      );
+
+      // Mock to return array with length 1 but undefined element
+      getNeighborsSpy.mockReturnValueOnce([undefined as any]);
+
+      const map: Map = [["@", "-"]];
+      const position: Position = { row: 0, column: 0 };
+      const result = getFirstStepIndices(map, position);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
+      }
+
+      getNeighborsSpy.mockRestore();
     });
 
     it("should return error when multiple valid neighbors found", () => {
@@ -239,6 +262,46 @@ describe("pathfinding", () => {
       if (result.success) {
         expect(result.value).toEqual({ row: 2, column: 1 });
       }
+    });
+
+    it("should return error when validTurn is undefined", () => {
+      // Test the defensive check at line 102
+      // We need to create a scenario where validTurns.length === 1 but validTurns[0] === undefined
+      // This is a defensive check. We'll use a Proxy to intercept the filter operation
+      const getNeighborsSpy = jest.spyOn(mapNavigationModule, "getNeighbors");
+
+      // Create a proxy array that when filtered returns [undefined]
+      const mockNeighbors = [{ row: 0, column: 1 }];
+      const proxyNeighbors = new Proxy(mockNeighbors, {
+        get(target, prop) {
+          if (prop === "filter") {
+            return function (callback: any) {
+              // Return array with undefined element to trigger the defensive check
+              return [undefined as any];
+            };
+          }
+          return (target as any)[prop];
+        },
+      });
+
+      getNeighborsSpy.mockReturnValueOnce(proxyNeighbors as any);
+
+      const map: Map = [
+        [" ", "|", " "],
+        ["-", MAP_CHARACTERS.INTERSECTION, "-"],
+        [" ", " ", " "],
+      ];
+      const current: Position = { row: 1, column: 1 };
+      const previous: Position = { row: 1, column: 0 };
+
+      const result = getIntersectionStep(map, current, previous);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe(ERROR_MESSAGES.FAKE_TURN);
+      }
+
+      getNeighborsSpy.mockRestore();
     });
   });
 

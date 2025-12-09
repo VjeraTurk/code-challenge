@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES } from "./constants";
 import type { Position, Map } from "./types";
 import { isCapitalLetterCharacter } from "./utils/characterValidation";
 import { isIndexVisited } from "./utils/mapNavigation";
@@ -22,7 +23,11 @@ export async function main(
   let currentPosition: Position = startPosition;
   let previousPosition: Position | null = null;
 
-  characterPath.push(map[currentPosition.row]?.[currentPosition.column]!);
+  const startChar = map[currentPosition.row]?.[currentPosition.column];
+  if (!startChar) {
+    throw new Error(ERROR_MESSAGES.START_POSITION_CHARACTER_NOT_FOUND);
+  }
+  characterPath.push(startChar);
   visitedIndices.push({
     row: currentPosition.row,
     column: currentPosition.column,
@@ -37,7 +42,11 @@ export async function main(
     previousPosition = currentPosition;
     currentPosition = nextStep.value;
 
-    characterPath.push(map[currentPosition.row]?.[currentPosition.column]!);
+    const currentChar = map[currentPosition.row]?.[currentPosition.column];
+    if (!currentChar) {
+      throw new Error(ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION);
+    }
+    characterPath.push(currentChar);
     const wasVisitedResult = isIndexVisited(
       visitedIndices,
       currentPosition.row,
@@ -47,9 +56,8 @@ export async function main(
       row: currentPosition.row,
       column: currentPosition.column,
     });
-    const char = map[currentPosition.row]?.[currentPosition.column];
-    if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
-      letters.push(char);
+    if (isCapitalLetterCharacter(currentChar) && !wasVisitedResult) {
+      letters.push(currentChar);
     }
 
     if (

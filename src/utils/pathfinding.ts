@@ -55,7 +55,11 @@ export function getFirstStepIndices(
       error: new Error(ERROR_MESSAGES.MULTIPLE_STARTING_PATHS),
     };
   }
-  return { success: true, value: validNeighbors[0]! };
+  const firstNeighbor = validNeighbors[0];
+  if (!firstNeighbor) {
+    return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
+  }
+  return { success: true, value: firstNeighbor };
 }
 
 // Assign to module object for spying
@@ -93,7 +97,12 @@ export function getIntersectionStep(
     return { success: false, error: new Error(ERROR_MESSAGES.FORK_IN_PATH) };
   }
 
-  return { success: true, value: validTurns[0]! };
+  const validTurn = validTurns[0];
+  if (!validTurn) {
+    return { success: false, error: new Error(ERROR_MESSAGES.FAKE_TURN) };
+  }
+
+  return { success: true, value: validTurn };
 }
 
 // Assign to module object for spying
