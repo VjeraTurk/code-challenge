@@ -1,26 +1,39 @@
-import type { Position, Direction, Map, Result } from "../types.js";
-import { ERROR_MESSAGES } from "../constants.js";
+import type { Position, Direction, Map, Result } from "../types";
+import { ERROR_MESSAGES } from "../constants";
 import {
   isCapitalLetterCharacter,
   isIntersectionCharacter,
   isValidForwardCharacter,
-} from "./characterValidation.js";
-import { getNeighbors, getDirection } from "./mapNavigation.js";
+} from "./characterValidation";
+import { getNeighbors, getDirection } from "./mapNavigation";
+
+// Export a module object to allow spying on internal function calls
+// This pattern allows jest.spyOn to intercept calls between functions in the same module
+export const pathfindingModuleInternal: {
+  getFirstStepIndices: typeof getFirstStepIndices;
+  getIntersectionStep: typeof getIntersectionStep;
+  getStepForwardIndices: typeof getStepForwardIndices;
+  getNextStepIndices: typeof getNextStepIndices;
+} = {} as any;
 
 export function isMovingHorizontally(
   previousPosition: Position,
   nextPosition: Position
 ): boolean {
-  return previousPosition.row === nextPosition.row
-  && previousPosition.column !== nextPosition.column;
+  return (
+    previousPosition.row === nextPosition.row &&
+    previousPosition.column !== nextPosition.column
+  );
 }
 
 export function isMovingVertically(
   previousPosition: Position,
   nextPosition: Position
 ): boolean {
-  return previousPosition.column === nextPosition.column
-  && previousPosition.row !== nextPosition.row;
+  return (
+    previousPosition.column === nextPosition.column &&
+    previousPosition.row !== nextPosition.row
+  );
 }
 
 export function getFirstStepIndices(
@@ -44,6 +57,9 @@ export function getFirstStepIndices(
   }
   return { success: true, value: validNeighbors[0]! };
 }
+
+// Assign to module object for spying
+pathfindingModuleInternal.getFirstStepIndices = getFirstStepIndices;
 
 export function getIntersectionStep(
   map: Map,
@@ -80,6 +96,9 @@ export function getIntersectionStep(
   return { success: true, value: validTurns[0]! };
 }
 
+// Assign to module object for spying
+pathfindingModuleInternal.getIntersectionStep = getIntersectionStep;
+
 export function getStepForwardIndices(
   map: Map,
   currentPosition: Position,
@@ -102,18 +121,21 @@ export function getStepForwardIndices(
   return undefined;
 }
 
+// Assign to module object for spying
+pathfindingModuleInternal.getStepForwardIndices = getStepForwardIndices;
+
 export function getNextStepIndices(
   map: Map,
   currentPosition: Position,
   previousPosition: Position | null
 ): Result<Position> {
   if (!previousPosition) {
-    return getFirstStepIndices(map, currentPosition);
+    return pathfindingModuleInternal.getFirstStepIndices(map, currentPosition);
   }
   const currentChar = map[currentPosition.row]?.[currentPosition.column];
 
   if (currentChar && !isIntersectionCharacter(currentChar)) {
-    const forwardStepResult = getStepForwardIndices(
+    const forwardStepResult = pathfindingModuleInternal.getStepForwardIndices(
       map,
       currentPosition,
       previousPosition
@@ -128,8 +150,15 @@ export function getNextStepIndices(
     (currentChar && isIntersectionCharacter(currentChar)) ||
     (currentChar && isCapitalLetterCharacter(currentChar))
   ) {
-    return getIntersectionStep(map, currentPosition, previousPosition);
+    return pathfindingModuleInternal.getIntersectionStep(
+      map,
+      currentPosition,
+      previousPosition
+    );
   }
 
   return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
 }
+
+// Assign getNextStepIndices to the module object after it's defined
+pathfindingModuleInternal.getNextStepIndices = getNextStepIndices;

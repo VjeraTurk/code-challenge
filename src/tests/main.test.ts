@@ -1,5 +1,5 @@
 import { expect, describe, it, xit } from "@jest/globals";
-import { main } from "../main.js";
+import { main } from "../main";
 import {
   mapBasicExample,
   mapGoStraightThroughIntersections,
@@ -20,7 +20,7 @@ import {
   mapInvalidCharacter,
   mapFirstStepIntersection,
   mapNoValidNeighbourstStartingPosition,
-} from "../tests/data/mock.js";
+} from "../tests/data/mock";
 
 describe("Valid maps tests", () => {
   it("should match path: a basic example", async () => {

@@ -4,10 +4,10 @@ import {
   getDirection,
   getNeighbors,
   isIndexVisited,
-} from "../utils/mapNavigation.js";
-import type { Position, Map } from "../types.js";
-import { MAP_CHARACTERS } from "../constants.js";
-import { isValidForwardCharacter } from "../utils/characterValidation.js";
+} from "../utils/mapNavigation";
+import type { Position, Map } from "../types";
+import { MAP_CHARACTERS } from "../constants";
+import { isValidForwardCharacter } from "../utils/characterValidation";
 
 describe("mapNavigation", () => {
   describe("getCharacterIndices", () => {

@@ -1,6 +1,6 @@
-import type { Position, Map, Result } from "../types.js";
-import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants.js";
-import { getCharacterIndices } from "./mapNavigation.js";
+import type { Position, Map, Result } from "../types";
+import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants";
+import { getCharacterIndices } from "./mapNavigation";
 
 export function validateMapStartAndEnd(
   map: Map

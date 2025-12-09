@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  "name": "code-challenge",
   "engines": {
     "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/main.js",
     "dev": "tsx src/main.ts",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@types/chai": "^5.2.3",

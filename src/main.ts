@@ -1,8 +1,8 @@
-import type { Position, Map } from "./types.js";
-import { isCapitalLetterCharacter } from "./utils/characterValidation.js";
-import { isIndexVisited } from "./utils/mapNavigation.js";
-import { getNextStepIndices } from "./utils/pathfinding.js";
-import { validateMapStartAndEnd } from "./utils/validation.js";
+import type { Position, Map } from "./types";
+import { isCapitalLetterCharacter } from "./utils/characterValidation";
+import { isIndexVisited } from "./utils/mapNavigation";
+import { getNextStepIndices } from "./utils/pathfinding";
+import { validateMapStartAndEnd } from "./utils/validation";
 
 export async function main(
   map: Map

@@ -1,4 +1,4 @@
-import { MAP_CHARACTERS } from "../constants.js";
+import { MAP_CHARACTERS } from "../constants";
 
 export function isDirectionCharacter(character: string): boolean {
   return (

@@ -5,8 +5,8 @@ import {
   isEndCharacter,
   isIntersectionCharacter,
   isValidForwardCharacter,
-} from "../utils/characterValidation.js";
-import { MAP_CHARACTERS } from "../constants.js";
+} from "../utils/characterValidation";
+import { MAP_CHARACTERS } from "../constants";
 
 describe("characterValidation", () => {
   describe("isDirectionCharacter", () => {

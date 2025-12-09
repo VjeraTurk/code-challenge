@@ -1,9 +1,9 @@
-import type { Position, Direction, Map } from "../types.js";
-import { MAP_CHARACTERS } from "../constants.js";
+import type { Position, Direction, Map } from "../types";
+import { MAP_CHARACTERS } from "../constants";
 import {
   isCapitalLetterCharacter,
   isEndCharacter,
-} from "./characterValidation.js";
+} from "./characterValidation";
 
 export function getCharacterIndices(map: Map, character: string): Position[] {
   if (!map || !map.length) return [];

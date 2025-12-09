@@ -1,4 +1,5 @@
-import { describe, it, expect, xit } from "@jest/globals";
+import { describe, it, expect, xit, jest } from "@jest/globals";
+import * as pathfindingModule from "../utils/pathfinding";
 import {
   isMovingHorizontally,
   isMovingVertically,
@@ -6,9 +7,10 @@ import {
   getIntersectionStep,
   getStepForwardIndices,
   getNextStepIndices,
-} from "../utils/pathfinding.js";
-import type { Position, Map } from "../types.js";
-import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants.js";
+  pathfindingModuleInternal,
+} from "../utils/pathfinding";
+import type { Position, Map } from "../types";
+import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants";
 
 describe("pathfinding", () => {
   describe("isMovingHorizontally", () => {
@@ -23,7 +25,6 @@ describe("pathfinding", () => {
       const next: Position = { row: 1, column: 0 };
       expect(isMovingHorizontally(previous, next)).toBe(false);
     });
-
 
     it("should return false when same position (same row and same column)", () => {
       const position: Position = { row: 1, column: 1 };
@@ -299,7 +300,6 @@ describe("pathfinding", () => {
     });
   });
 
-  // TODO: doesn't check if it was called correctly
   describe("getNextStepIndices", () => {
     it("should call getFirstStepIndices when previousPosition is null", () => {
       const map: Map = [
@@ -308,11 +308,17 @@ describe("pathfinding", () => {
         [" ", " ", " "],
       ];
       const current: Position = { row: 1, column: 1 };
+      const getFirstStepIndicesSpy = jest.spyOn(
+        pathfindingModuleInternal,
+        "getFirstStepIndices"
+      );
       const result = getNextStepIndices(map, current, null);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 1, column: 2 });
       }
+      expect(getFirstStepIndicesSpy).toHaveBeenCalledTimes(1);
+      expect(getFirstStepIndicesSpy).toHaveBeenCalledWith(map, current);
     });
 
     it("should continue forward when not at intersection", () => {
@@ -325,7 +331,6 @@ describe("pathfinding", () => {
         expect(result.value).toEqual({ row: 0, column: 2 });
       }
     });
-    // TODO: doesn't check if it was called correctly
     it("should handle intersection character", () => {
       const map: Map = [
         [" ", "|", " "],
@@ -334,13 +339,33 @@ describe("pathfinding", () => {
       ];
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
+
+      // Now we can use jest.spyOn with CommonJS!
+      // The spy will intercept calls to getIntersectionStep even when called from within getNextStepIndices
+      const getIntersectionStepSpy = jest.spyOn(
+        pathfindingModuleInternal,
+        "getIntersectionStep"
+      );
+
       const result = getNextStepIndices(map, current, previous);
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 0, column: 1 });
       }
+
+      // Verify that getIntersectionStep was called
+      expect(getIntersectionStepSpy).toHaveBeenCalledTimes(1);
+      expect(getIntersectionStepSpy).toHaveBeenCalledWith(
+        map,
+        current,
+        previous
+      );
+
+      // Clean up the spy
+      getIntersectionStepSpy.mockRestore();
     });
-    // TODO: doesn't check if it was called correctly
+
     it("should handle letter as intersection when forward step fails", () => {
       const map: Map = [
         [" ", "|", " "],
