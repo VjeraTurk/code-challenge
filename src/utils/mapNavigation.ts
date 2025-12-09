@@ -9,12 +9,12 @@ export function getCharacterIndices(map: Map, character: string): Position[] {
   if (!map || !map.length) return [];
   const indices: Position[] = [];
 
-  for (let i = 0; i < map.length; i++) {
-    const row = map[i];
+  for (let rowIndex = 0; rowIndex < map.length; rowIndex++) {
+    const row = map[rowIndex];
     if (!row || !row.length) continue;
-    for (let j = 0; j < row.length; j++) {
-      if (row[j] === character) {
-        indices.push({ row: i, column: j });
+    for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+      if (row[columnIndex] === character) {
+        indices.push({ row: rowIndex, column: columnIndex });
       }
     }
   }

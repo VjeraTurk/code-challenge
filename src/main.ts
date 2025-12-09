@@ -17,44 +17,46 @@ export async function main(
     throw validation.error;
   }
 
-  const { start: startIndex, end: endIndex } = validation.value;
+  const { start: startPosition, end: endPosition } = validation.value;
 
-  let endNotReached = true;
+  let currentPosition: Position = startPosition;
   let previousPosition: Position | null = null;
 
-  characterPath.push(map[startIndex?.row!]?.[startIndex?.column!]!);
+  characterPath.push(map[currentPosition.row]?.[currentPosition.column]!);
   visitedIndices.push({
-    row: startIndex?.row!,
-    column: startIndex?.column!,
+    row: currentPosition.row,
+    column: currentPosition.column,
   });
 
-  let i = startIndex?.row!;
-  let j = startIndex?.column!;
-
-  while (endNotReached) {
-    const nextStep = getNextStepIndices(
-      map,
-      { row: i!, column: j! },
-      previousPosition
-    );
-    if (nextStep.success) {
-      previousPosition = { row: i!, column: j! };
-      i = nextStep.value.row;
-      j = nextStep.value.column;
-
-      characterPath.push(map[i]?.[j]!);
-      const wasVisitedResult = isIndexVisited(visitedIndices, i!, j!);
-      visitedIndices.push({ row: i!, column: j! });
-      const char = map[i]?.[j];
-      if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
-        letters.push(char);
-      }
-
-      if (i === endIndex?.row && j === endIndex?.column) {
-        endNotReached = false;
-      }
-    } else {
+  while (true) {
+    const nextStep = getNextStepIndices(map, currentPosition, previousPosition);
+    if (!nextStep.success) {
       throw nextStep.error;
+    }
+
+    previousPosition = currentPosition;
+    currentPosition = nextStep.value;
+
+    characterPath.push(map[currentPosition.row]?.[currentPosition.column]!);
+    const wasVisitedResult = isIndexVisited(
+      visitedIndices,
+      currentPosition.row,
+      currentPosition.column
+    );
+    visitedIndices.push({
+      row: currentPosition.row,
+      column: currentPosition.column,
+    });
+    const char = map[currentPosition.row]?.[currentPosition.column];
+    if (char && isCapitalLetterCharacter(char) && !wasVisitedResult) {
+      letters.push(char);
+    }
+
+    if (
+      currentPosition.row === endPosition.row &&
+      currentPosition.column === endPosition.column
+    ) {
+      break;
     }
   }
 
