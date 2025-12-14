@@ -1,5 +1,4 @@
 import { describe, it, expect, xit, jest } from "@jest/globals";
-import * as pathfindingModule from "../utils/pathfinding";
 import * as mapNavigationModule from "../utils/mapNavigation";
 import {
   isMovingHorizontally,
@@ -8,12 +7,12 @@ import {
   getIntersectionStep,
   getStepForwardIndices,
   getNextStepIndices,
-  pathfindingModuleInternal,
-} from "../utils/pathfinding";
+  pathFindingModuleInternal,
+} from "../utils/pathFinding";
 import type { Position, Map } from "../types";
 import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants";
 
-describe("pathfinding", () => {
+describe("pathFinding", () => {
   describe("isMovingHorizontally", () => {
     it("should return true when moving horizontally (same row)", () => {
       const previous: Position = { row: 0, column: 0 };
@@ -104,7 +103,7 @@ describe("pathfinding", () => {
       }
     });
 
-    it("should not find any neighbours", () => {
+    it("should not find any neighbors", () => {
       const map: Map = [
         [" ", " ", " "],
         [" ", "@", "|"],
@@ -372,7 +371,7 @@ describe("pathfinding", () => {
       ];
       const current: Position = { row: 1, column: 1 };
       const getFirstStepIndicesSpy = jest.spyOn(
-        pathfindingModuleInternal,
+        pathFindingModuleInternal,
         "getFirstStepIndices"
       );
       const result = getNextStepIndices(map, current, null);
@@ -406,7 +405,7 @@ describe("pathfinding", () => {
       // Now we can use jest.spyOn with CommonJS!
       // The spy will intercept calls to getIntersectionStep even when called from within getNextStepIndices
       const getIntersectionStepSpy = jest.spyOn(
-        pathfindingModuleInternal,
+        pathFindingModuleInternal,
         "getIntersectionStep"
       );
 
@@ -448,6 +447,28 @@ describe("pathfinding", () => {
     it("should return error when path is broken", () => {
       const map: Map = [["@", "-", " "]];
       const current: Position = { row: 0, column: 1 };
+      const previous: Position = { row: 0, column: 0 };
+      const result = getNextStepIndices(map, current, previous);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
+      }
+    });
+
+    it("should return error when currentChar is undefined (out of bounds)", () => {
+      const map: Map = [["@", "-"]];
+      const current: Position = { row: 0, column: 2 }; // Out of bounds
+      const previous: Position = { row: 0, column: 1 };
+      const result = getNextStepIndices(map, current, previous);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
+      }
+    });
+
+    it("should return error when currentChar is undefined (invalid row)", () => {
+      const map: Map = [["@", "-"]];
+      const current: Position = { row: 5, column: 0 }; // Invalid row
       const previous: Position = { row: 0, column: 0 };
       const result = getNextStepIndices(map, current, previous);
       expect(result.success).toBe(false);

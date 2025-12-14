@@ -34,6 +34,33 @@ const DIRECTIONS: Direction[] = [
   { vertical: 0, horizontal: 1 }, // right
 ];
 
+export function isValidNeighborForDirection(
+  char: string,
+  direction: Direction
+): boolean {
+  const isHorizontal = direction.horizontal !== 0;
+  const isVertical = direction.vertical !== 0;
+
+  // Special characters are valid in any direction
+  if (
+    char === MAP_CHARACTERS.INTERSECTION ||
+    isCapitalLetterCharacter(char) ||
+    isEndCharacter(char)
+  ) {
+    return true;
+  }
+
+  // Direction-specific validation
+  if (isHorizontal) {
+    // Horizontal direction requires - (horizontal line)
+    return char === MAP_CHARACTERS.HORIZONTAL;
+  }
+  // Vertical direction requires | (vertical line)
+  // Since DIRECTIONS only has horizontal or vertical movements,
+  // if not horizontal, it must be vertical
+  return isVertical && char === MAP_CHARACTERS.VERTICAL;
+}
+
 export function getNeighbors(
   map: Map,
   position: Position,
@@ -46,42 +73,25 @@ export function getNeighbors(
   }))
     .filter((pos) => {
       const char = map[pos.row]?.[pos.column];
-      if (!char || !isValid(char)) {
-        return false;
-      }
-
-      // Check if character matches direction requirements:
-      // - Horizontal neighbors (left/right) must be: -, +, letters, or x
-      // - Vertical neighbors (up/down) must be: |, +, letters, or x
-      const isHorizontal = pos.direction.horizontal !== 0;
-      const isVertical = pos.direction.vertical !== 0;
-
-      // Special characters (+, letters, x) are valid in any direction
-      if (
-        char === MAP_CHARACTERS.INTERSECTION ||
-        isCapitalLetterCharacter(char) ||
-        isEndCharacter(char)
-      ) {
-        return true;
-      }
-
-      // For direction characters, check if they match the direction
-      if (isHorizontal) {
-        // Horizontal direction requires - (horizontal line)
-        return char === MAP_CHARACTERS.HORIZONTAL;
-      }
-      // Vertical direction requires | (vertical line)
-      // Since DIRECTIONS only has horizontal or vertical movements,
-      // if not horizontal, it must be vertical
-      return isVertical && char === MAP_CHARACTERS.VERTICAL;
+      return (
+        char &&
+        isValid(char) &&
+        isValidNeighborForDirection(char, pos.direction)
+      );
     })
     .map(({ row, column }) => ({ row, column }));
 }
 
 export function isIndexVisited(
   characterPath: Position[],
-  row: number,
-  column: number
+  position : Position
 ): boolean {
-  return characterPath.some((p) => p.row === row && p.column === column);
+  return characterPath.some((p) => p.row === position.row && p.column === position.column);
+}
+
+export function arePositionsEqual(pos1: Position, pos2: Position): boolean {
+  return pos1.row === pos2.row && pos1.column === pos2.column;
+}
+export function getCharacterAtPosition(map: Map, position: Position): string | undefined {
+  return map[position.row]?.[position.column];
 }

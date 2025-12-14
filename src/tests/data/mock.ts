@@ -182,7 +182,7 @@ export const mapFakeTurn = [
   ["@", "-", "A", "-", "+", "-", "B", "-", "x"]
 ];
 
-// vretical fake turn
+// vertical fake turn
 export const mapVerticalFakeTurn = [
   ["@"],
   ["|"],
@@ -215,7 +215,7 @@ export const mapFirstStepIntersection = [
   [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 ];
 
-export const mapNoValidNeighbourstStartingPosition = [
+export const mapNoValidNeighborsStartingPosition = [
   ["@", " ", " "],
   ["-", " ", " "],
   ["|", " ", " "],

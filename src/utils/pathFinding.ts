@@ -5,11 +5,11 @@ import {
   isIntersectionCharacter,
   isValidForwardCharacter,
 } from "./characterValidation";
-import { getNeighbors, getDirection } from "./mapNavigation";
+import { getNeighbors, getDirection, getCharacterAtPosition } from "./mapNavigation";
 
 // Export a module object to allow spying on internal function calls
 // This pattern allows jest.spyOn to intercept calls between functions in the same module
-export const pathfindingModuleInternal: {
+export const pathFindingModuleInternal: {
   getFirstStepIndices: typeof getFirstStepIndices;
   getIntersectionStep: typeof getIntersectionStep;
   getStepForwardIndices: typeof getStepForwardIndices;
@@ -63,7 +63,7 @@ export function getFirstStepIndices(
 }
 
 // Assign to module object for spying
-pathfindingModuleInternal.getFirstStepIndices = getFirstStepIndices;
+pathFindingModuleInternal.getFirstStepIndices = getFirstStepIndices;
 
 export function getIntersectionStep(
   map: Map,
@@ -106,7 +106,7 @@ export function getIntersectionStep(
 }
 
 // Assign to module object for spying
-pathfindingModuleInternal.getIntersectionStep = getIntersectionStep;
+pathFindingModuleInternal.getIntersectionStep = getIntersectionStep;
 
 export function getStepForwardIndices(
   map: Map,
@@ -131,7 +131,7 @@ export function getStepForwardIndices(
 }
 
 // Assign to module object for spying
-pathfindingModuleInternal.getStepForwardIndices = getStepForwardIndices;
+pathFindingModuleInternal.getStepForwardIndices = getStepForwardIndices;
 
 export function getNextStepIndices(
   map: Map,
@@ -139,12 +139,16 @@ export function getNextStepIndices(
   previousPosition: Position | null
 ): Result<Position> {
   if (!previousPosition) {
-    return pathfindingModuleInternal.getFirstStepIndices(map, currentPosition);
+    return pathFindingModuleInternal.getFirstStepIndices(map, currentPosition);
   }
-  const currentChar = map[currentPosition.row]?.[currentPosition.column];
+  const currentChar = getCharacterAtPosition(map, currentPosition);
 
-  if (currentChar && !isIntersectionCharacter(currentChar)) {
-    const forwardStepResult = pathfindingModuleInternal.getStepForwardIndices(
+  if (!currentChar) {
+    return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
+  }
+
+  if (!isIntersectionCharacter(currentChar)) {
+    const forwardStepResult = pathFindingModuleInternal.getStepForwardIndices(
       map,
       currentPosition,
       previousPosition
@@ -156,10 +160,10 @@ export function getNextStepIndices(
   }
 
   if (
-    (currentChar && isIntersectionCharacter(currentChar)) ||
-    (currentChar && isCapitalLetterCharacter(currentChar))
+    isIntersectionCharacter(currentChar) ||
+    isCapitalLetterCharacter(currentChar)
   ) {
-    return pathfindingModuleInternal.getIntersectionStep(
+    return pathFindingModuleInternal.getIntersectionStep(
       map,
       currentPosition,
       previousPosition
@@ -170,4 +174,4 @@ export function getNextStepIndices(
 }
 
 // Assign getNextStepIndices to the module object after it's defined
-pathfindingModuleInternal.getNextStepIndices = getNextStepIndices;
+pathFindingModuleInternal.getNextStepIndices = getNextStepIndices;
