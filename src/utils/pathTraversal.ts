@@ -3,6 +3,7 @@ import { Position, Map, Result } from "../types";
 import { isCapitalLetterCharacter } from "./characterValidation";
 import { arePositionsEqual, getCharacterAtPosition, isIndexVisited } from "./mapNavigation";
 import { getNextStepIndices } from "./pathFinding";
+import { isValidPosition } from "./validation";
 
 function processPosition(
   map: Map,
@@ -31,31 +32,35 @@ export function traversePath(
     endPosition: Position
   ): Result<{ characterPath: string[]; letters: string[] }> {
 
-  let characterPath: string[] = [];
-  let letters: string[] = [];
-
-  let visitedPositions: Position[] = [];
-  let currentPosition: Position = startPosition;
-  let previousPosition: Position | null = null;
-
-  processPosition(map, currentPosition, visitedPositions, characterPath, letters);
-
-
-  while (true) {
-    const nextStep = getNextStepIndices(map, currentPosition, previousPosition);
-    if (!nextStep.success) {
-      throw nextStep.error;
+    if (!isValidPosition(startPosition) || !isValidPosition(endPosition)) {
+     return { success: false, error: new Error("Invalid start or end position") };
     }
 
-    previousPosition = currentPosition;
-    currentPosition = nextStep.value;
+    let characterPath: string[] = [];
+    let letters: string[] = [];
+
+    let visitedPositions: Position[] = [];
+    let currentPosition: Position = startPosition;
+    let previousPosition: Position | null = null;
 
     processPosition(map, currentPosition, visitedPositions, characterPath, letters);
 
-    if (arePositionsEqual(currentPosition, endPosition)) {
-      break;
-    }
-  }
 
-  return { success: true, value: { characterPath, letters } };
+    while (true) {
+      const nextStep = getNextStepIndices(map, currentPosition, previousPosition);
+      if (!nextStep.success) {
+        throw nextStep.error;
+      }
+
+      previousPosition = currentPosition;
+      currentPosition = nextStep.value;
+
+      processPosition(map, currentPosition, visitedPositions, characterPath, letters);
+
+      if (arePositionsEqual(currentPosition, endPosition)) {
+        break;
+      }
+    }
+
+    return { success: true, value: { characterPath, letters } };
   }

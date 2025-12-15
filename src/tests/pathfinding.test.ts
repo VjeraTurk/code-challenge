@@ -52,6 +52,16 @@ describe("pathFinding", () => {
   });
 
   describe("getFirstStepIndices", () => {
+    it("should return error when position is invalid", () => {
+      const map: Map = [["@", "-", "x"]];
+      const position: Position = { row: -1, column: 0 };
+      const result = getFirstStepIndices(map, position);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe("Invalid position");
+      }
+    });
+
     it("should return error when no valid neighbors found", () => {
       const map: Map = [
         ["@", " "],

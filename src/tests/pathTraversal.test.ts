@@ -225,6 +225,28 @@ describe("pathTraversal", () => {
           traversePath(map, start, invalidPosition);
         }).toThrow();
       });
+
+      it("should return error when startPosition is invalid", () => {
+        const map: Map = [["@", "-", "x"]];
+        const invalidStart: Position = { row: -1, column: 0 };
+        const end: Position = { row: 0, column: 2 };
+        const result = traversePath(map, invalidStart, end);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Invalid start or end position");
+        }
+      });
+
+      it("should return error when endPosition is invalid", () => {
+        const map: Map = [["@", "-", "x"]];
+        const start: Position = { row: 0, column: 0 };
+        const invalidEnd: Position = { row: 0, column: -1 };
+        const result = traversePath(map, start, invalidEnd);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Invalid start or end position");
+        }
+      });
     });
 
     describe("edge cases", () => {

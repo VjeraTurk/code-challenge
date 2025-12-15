@@ -5,6 +5,7 @@ import {
   getNeighbors,
   isIndexVisited,
   isValidNeighborForDirection,
+  getCharacterAtPosition,
 } from "../utils/mapNavigation";
 import type { Position, Map, Direction } from "../types";
 import { MAP_CHARACTERS } from "../constants";
@@ -53,6 +54,14 @@ describe("mapNavigation", () => {
       const map: Map = [[], [], []];
       expect(getCharacterIndices(map, MAP_CHARACTERS.START)).toEqual([]);
     });
+
+    it("should return empty array when character is invalid", () => {
+      const map: Map = [["@", "-", "x"]];
+      expect(getCharacterIndices(map, "")).toEqual([]); // Empty string
+      expect(getCharacterIndices(map, "ab" as any)).toEqual([]); // Multiple characters
+      expect(getCharacterIndices(map, null as any)).toEqual([]); // null
+      expect(getCharacterIndices(map, undefined as any)).toEqual([]); // undefined
+    });
   });
 
   describe("getDirection", () => {
@@ -96,6 +105,18 @@ describe("mapNavigation", () => {
       const to: Position = { row: 1, column: 1 };
       const result = getDirection(from, to);
       expect(result).toEqual({ vertical: 0, horizontal: 0 });
+    });
+
+    it("should throw error when from position is invalid", () => {
+      const from: Position = { row: -1, column: 0 };
+      const to: Position = { row: 0, column: 0 };
+      expect(() => getDirection(from, to)).toThrow("Invalid position");
+    });
+
+    it("should throw error when to position is invalid", () => {
+      const from: Position = { row: 0, column: 0 };
+      const to: Position = { row: 0, column: -1 };
+      expect(() => getDirection(from, to)).toThrow("Invalid position");
     });
   });
 
@@ -199,6 +220,43 @@ describe("mapNavigation", () => {
       const result = getNeighbors(map, position, isValidForwardCharacter);
       // Should not crash, should handle undefined gracefully
       expect(Array.isArray(result)).toBe(true);
+    });
+
+    it("should return empty array when position is invalid", () => {
+      const map: Map = [["@", "-", "x"]];
+      const position: Position = { row: -1, column: 0 };
+      const result = getNeighbors(map, position, isValidForwardCharacter);
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe("getCharacterAtPosition", () => {
+    it("should return character at valid position", () => {
+      const map: Map = [["@", "-", "A", "x"]];
+      const position: Position = { row: 0, column: 2 };
+      const result = getCharacterAtPosition(map, position);
+      expect(result).toBe("A");
+    });
+
+    it("should return undefined when position is out of bounds", () => {
+      const map: Map = [["@", "-", "x"]];
+      const position: Position = { row: 0, column: 10 };
+      const result = getCharacterAtPosition(map, position);
+      expect(result).toBeUndefined();
+    });
+
+    it("should return undefined when position is invalid", () => {
+      const map: Map = [["@", "-", "x"]];
+      const position: Position = { row: -1, column: 0 };
+      const result = getCharacterAtPosition(map, position);
+      expect(result).toBeUndefined();
+    });
+
+    it("should return undefined for invalid row", () => {
+      const map: Map = [["@", "-", "x"]];
+      const position: Position = { row: 5, column: 0 };
+      const result = getCharacterAtPosition(map, position);
+      expect(result).toBeUndefined();
     });
   });
 

@@ -4,9 +4,12 @@ import {
   isCapitalLetterCharacter,
   isEndCharacter,
 } from "./characterValidation";
+import { isValidCharacter, isValidMap, isValidPosition } from "./validation";
 
 export function getCharacterIndices(map: Map, character: string): Position[] {
-  if (!map || !map.length) return [];
+  if (!isValidMap(map)) return [];
+  if (!isValidCharacter(character)) return [];
+
   const indices: Position[] = [];
 
   for (let rowIndex = 0; rowIndex < map.length; rowIndex++) {
@@ -22,6 +25,9 @@ export function getCharacterIndices(map: Map, character: string): Position[] {
 }
 
 export function getDirection(from: Position, to: Position): Direction {
+  if (!isValidPosition(from) || !isValidPosition(to)) {
+    throw new Error("Invalid position");
+  }
   const verticalDiff: number = to.row - from.row;
   const horizontalDiff: number = to.column - from.column;
   return { vertical: verticalDiff, horizontal: horizontalDiff };
@@ -66,6 +72,9 @@ export function getNeighbors(
   position: Position,
   isValid: (char: string) => boolean
 ): Position[] {
+  if (!isValidPosition(position)) {
+    return [];
+  }
   return DIRECTIONS.map((dir) => ({
     row: position.row + dir.vertical,
     column: position.column + dir.horizontal,
@@ -93,5 +102,8 @@ export function arePositionsEqual(pos1: Position, pos2: Position): boolean {
   return pos1.row === pos2.row && pos1.column === pos2.column;
 }
 export function getCharacterAtPosition(map: Map, position: Position): string | undefined {
+  if (!isValidPosition(position)) {
+    return undefined;
+  }
   return map[position.row]?.[position.column];
 }

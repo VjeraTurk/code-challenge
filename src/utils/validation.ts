@@ -29,6 +29,28 @@ export function validateMapStartAndEnd(
       error: new Error(ERROR_MESSAGES.START_OR_END_NOT_FOUND),
     };
   }
+  if (!isValidPosition(startPosition) || !isValidPosition(endPosition)) {
+    return { success: false, error: new Error("Invalid position") };
+  }
 
   return { success: true, value: { start: startPosition, end: endPosition } };
+}
+
+export function isValidCharacter(character: string): boolean {
+  return typeof character === "string" && character.length === 1;
+}
+
+export function isValidMap(map: Map): boolean {
+  return Array.isArray(map) && map.length > 0;
+}
+
+export function isValidPosition(position: Position): boolean {
+  return (
+    position !== null &&
+    typeof position === "object" &&
+    typeof position.row === "number" &&
+    typeof position.column === "number" &&
+    position.row >= 0 &&
+    position.column >= 0
+  );
 }

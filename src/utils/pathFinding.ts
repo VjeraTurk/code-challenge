@@ -6,6 +6,7 @@ import {
   isValidForwardCharacter,
 } from "./characterValidation";
 import { getNeighbors, getDirection, getCharacterAtPosition } from "./mapNavigation";
+import { isValidPosition } from "./validation";
 
 // Export a module object to allow spying on internal function calls
 // This pattern allows jest.spyOn to intercept calls between functions in the same module
@@ -40,6 +41,9 @@ export function getFirstStepIndices(
   map: Map,
   currentPosition: Position
 ): Result<Position> {
+  if (!isValidPosition(currentPosition)) {
+    return { success: false, error: new Error("Invalid position") };
+  }
   const validNeighbors = getNeighbors(
     map,
     currentPosition,
