@@ -1,14 +1,14 @@
 import { ERROR_MESSAGES } from "../constants";
 import { Position, Map, Result } from "../types";
 import { isCapitalLetterCharacter } from "./characterValidation";
-import { arePositionsEqual, getCharacterAtPosition, isIndexVisited } from "./mapNavigation";
-import { getNextStepIndices } from "./pathFinding";
+import { arePositionsEqual, getCharacterAtPosition, isPositionVisited } from "./mapNavigation";
+import { getNextStepPosition } from "./pathFinding";
 import { isValidPosition } from "./validation";
 
 function processPosition(
   map: Map,
   position: Position,
-  visitedIndices: Position[],
+  visitedPositions: Position[],
   characterPath: string[],
   letters: string[]
 ): void {
@@ -18,8 +18,8 @@ function processPosition(
   }
 
   characterPath.push(char);
-  const wasVisited = isIndexVisited(visitedIndices, position);
-  visitedIndices.push(position);
+  const wasVisited = isPositionVisited(visitedPositions, position);
+  visitedPositions.push(position);
 
   if (isCapitalLetterCharacter(char) && !wasVisited) {
     letters.push(char);
@@ -33,13 +33,13 @@ export function traversePath(
   ): Result<{ characterPath: string[]; letters: string[] }> {
 
     if (!isValidPosition(startPosition) || !isValidPosition(endPosition)) {
-     return { success: false, error: new Error("Invalid start or end position") };
+     return { success: false, error: new Error(ERROR_MESSAGES.INVALID_POSITION) };
     }
 
     let characterPath: string[] = [];
     let letters: string[] = [];
-
     let visitedPositions: Position[] = [];
+
     let currentPosition: Position = startPosition;
     let previousPosition: Position | null = null;
 
@@ -47,7 +47,7 @@ export function traversePath(
 
 
     while (true) {
-      const nextStep = getNextStepIndices(map, currentPosition, previousPosition);
+      const nextStep = getNextStepPosition(map, currentPosition, previousPosition);
       if (!nextStep.success) {
         throw nextStep.error;
       }

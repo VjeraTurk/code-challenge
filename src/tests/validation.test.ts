@@ -38,15 +38,15 @@ describe("validation", () => {
       }
     });
 
-    it("should return error when startPosition is undefined after length check (covers line 27)", () => {
-      // To trigger line 27, we need getCharacterIndices to return array with undefined element
-      // We'll mock getCharacterIndices to return [undefined]
-      const getCharacterIndicesSpy = jest.spyOn(
+    it("should return error when startPosition is undefined after length check", () => {
+      // To trigger line 27, we need getCharacterPositions to return array with undefined element
+      // We'll mock getCharacterPositions to return [undefined]
+      const getCharacterPositionsSpy = jest.spyOn(
         require("../utils/mapNavigation"),
-        "getCharacterIndices"
+        "getCharacterPositions"
       );
 
-      getCharacterIndicesSpy
+      getCharacterPositionsSpy
         .mockReturnValueOnce([undefined as any]) // start returns [undefined]
         .mockReturnValueOnce([{ row: 0, column: 2 }]); // end returns valid position
 
@@ -60,16 +60,16 @@ describe("validation", () => {
         );
       }
 
-      getCharacterIndicesSpy.mockRestore();
+      getCharacterPositionsSpy.mockRestore();
     });
 
     it("should return error when startPosition is invalid", () => {
-      const getCharacterIndicesSpy = jest.spyOn(
+      const getCharacterPositionsSpy = jest.spyOn(
         require("../utils/mapNavigation"),
-        "getCharacterIndices"
+        "getCharacterPositions"
       );
 
-      getCharacterIndicesSpy
+      getCharacterPositionsSpy
         .mockReturnValueOnce([{ row: -1, column: 0 }]) // start returns invalid position (negative row)
         .mockReturnValueOnce([{ row: 0, column: 2 }]); // end returns valid position
 
@@ -81,16 +81,16 @@ describe("validation", () => {
         expect(result.error.message).toBe("Invalid position");
       }
 
-      getCharacterIndicesSpy.mockRestore();
+      getCharacterPositionsSpy.mockRestore();
     });
 
     it("should return error when endPosition is invalid", () => {
-      const getCharacterIndicesSpy = jest.spyOn(
+      const getCharacterPositionsSpy = jest.spyOn(
         require("../utils/mapNavigation"),
-        "getCharacterIndices"
+        "getCharacterPositions"
       );
 
-      getCharacterIndicesSpy
+      getCharacterPositionsSpy
         .mockReturnValueOnce([{ row: 0, column: 0 }]) // start returns valid position
         .mockReturnValueOnce([{ row: 0, column: -1 }]); // end returns invalid position (negative column)
 
@@ -102,7 +102,7 @@ describe("validation", () => {
         expect(result.error.message).toBe("Invalid position");
       }
 
-      getCharacterIndicesSpy.mockRestore();
+      getCharacterPositionsSpy.mockRestore();
     });
   });
 

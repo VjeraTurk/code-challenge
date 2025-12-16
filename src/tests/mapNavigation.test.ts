@@ -1,9 +1,9 @@
 import { describe, it, expect, xit } from "@jest/globals";
 import {
-  getCharacterIndices,
+  getCharacterPositions,
   getDirection,
   getNeighbors,
-  isIndexVisited,
+  isPositionVisited,
   isValidNeighborForDirection,
   getCharacterAtPosition,
 } from "../utils/mapNavigation";
@@ -12,20 +12,20 @@ import { MAP_CHARACTERS } from "../constants";
 import { isValidForwardCharacter } from "../utils/characterValidation";
 
 describe("mapNavigation", () => {
-  describe("getCharacterIndices", () => {
+  describe("getCharacterPositions", () => {
     it("should return empty array for empty map", () => {
       const map: Map = [];
-      expect(getCharacterIndices(map, MAP_CHARACTERS.START)).toEqual([]);
+      expect(() => getCharacterPositions(map, MAP_CHARACTERS.START)).toThrow("Invalid map");
     });
 
     it("should return empty array for map with no matching character", () => {
       const map: Map = [["A", "B", "C"]];
-      expect(getCharacterIndices(map, MAP_CHARACTERS.START)).toEqual([]);
+      expect(getCharacterPositions(map, MAP_CHARACTERS.START)).toEqual([]);
     });
 
     it("should find single character in map", () => {
       const map: Map = [["@", "-", "A"]];
-      const result = getCharacterIndices(map, MAP_CHARACTERS.START);
+      const result = getCharacterPositions(map, MAP_CHARACTERS.START);
       expect(result).toEqual([{ row: 0, column: 0 }]);
     });
 
@@ -34,7 +34,7 @@ describe("mapNavigation", () => {
         ["@", "-", "A"],
         ["B", "@", "C"],
       ];
-      const result = getCharacterIndices(map, MAP_CHARACTERS.START);
+      const result = getCharacterPositions(map, MAP_CHARACTERS.START);
       expect(result).toEqual([
         { row: 0, column: 0 },
         { row: 1, column: 1 },
@@ -43,7 +43,7 @@ describe("mapNavigation", () => {
 
     it("should handle jagged arrays (different row lengths)", () => {
       const map: Map = [["@", "-"], ["A", "B", "C", "@"], ["x"]];
-      const result = getCharacterIndices(map, MAP_CHARACTERS.START);
+      const result = getCharacterPositions(map, MAP_CHARACTERS.START);
       expect(result).toEqual([
         { row: 0, column: 0 },
         { row: 1, column: 3 },
@@ -52,15 +52,15 @@ describe("mapNavigation", () => {
 
     it("should return empty array for empty rows", () => {
       const map: Map = [[], [], []];
-      expect(getCharacterIndices(map, MAP_CHARACTERS.START)).toEqual([]);
+      expect(getCharacterPositions(map, MAP_CHARACTERS.START)).toEqual([]);
     });
 
     it("should return empty array when character is invalid", () => {
       const map: Map = [["@", "-", "x"]];
-      expect(getCharacterIndices(map, "")).toEqual([]); // Empty string
-      expect(getCharacterIndices(map, "ab" as any)).toEqual([]); // Multiple characters
-      expect(getCharacterIndices(map, null as any)).toEqual([]); // null
-      expect(getCharacterIndices(map, undefined as any)).toEqual([]); // undefined
+      expect(() => getCharacterPositions(map, "")).toThrow("Invalid character"); // Empty string
+      expect(() => getCharacterPositions(map, "ab" as any)).toThrow("Invalid character"); // Multiple characters
+      expect(() => getCharacterPositions(map, null as any)).toThrow("Invalid character"); // null
+      expect(() => getCharacterPositions(map, undefined as any)).toThrow("Invalid character"); // undefined
     });
   });
 
@@ -260,10 +260,10 @@ describe("mapNavigation", () => {
     });
   });
 
-  describe("isIndexVisited", () => {
+  describe("isPositionVisited", () => {
     it("should return false for empty path", () => {
       const path: Position[] = [];
-      expect(isIndexVisited(path, {row: 0, column: 0})).toBe(false);
+      expect(isPositionVisited(path, {row: 0, column: 0})).toBe(false);
     });
 
     it("should return true when position is in path", () => {
@@ -272,7 +272,7 @@ describe("mapNavigation", () => {
         { row: 0, column: 1 },
         { row: 1, column: 1 },
       ];
-      expect(isIndexVisited(path, {row: 0, column: 1})).toBe(true);
+      expect(isPositionVisited(path, {row: 0, column: 1})).toBe(true);
     });
 
     it("should return false when position is not in path", () => {
@@ -281,7 +281,7 @@ describe("mapNavigation", () => {
         { row: 0, column: 1 },
         { row: 1, column: 1 },
       ];
-      expect(isIndexVisited(path, {row: 2, column: 2})).toBe(false);
+      expect(isPositionVisited(path, {row: 2, column: 2})).toBe(false);
     });
   });
 

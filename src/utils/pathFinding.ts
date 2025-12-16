@@ -11,10 +11,10 @@ import { isValidPosition } from "./validation";
 // Export a module object to allow spying on internal function calls
 // This pattern allows jest.spyOn to intercept calls between functions in the same module
 export const pathFindingModuleInternal: {
-  getFirstStepIndices: typeof getFirstStepIndices;
+  getFirstStepPosition: typeof getFirstStepPosition;
   getIntersectionStep: typeof getIntersectionStep;
-  getStepForwardIndices: typeof getStepForwardIndices;
-  getNextStepIndices: typeof getNextStepIndices;
+  getStepForwardPosition: typeof getStepForwardPosition;
+  getNextStepPosition: typeof getNextStepPosition;
 } = {} as any;
 
 export function isMovingHorizontally(
@@ -37,7 +37,7 @@ export function isMovingVertically(
   );
 }
 
-export function getFirstStepIndices(
+export function getFirstStepPosition(
   map: Map,
   currentPosition: Position
 ): Result<Position> {
@@ -67,7 +67,7 @@ export function getFirstStepIndices(
 }
 
 // Assign to module object for spying
-pathFindingModuleInternal.getFirstStepIndices = getFirstStepIndices;
+pathFindingModuleInternal.getFirstStepPosition = getFirstStepPosition;
 
 export function getIntersectionStep(
   map: Map,
@@ -112,20 +112,19 @@ export function getIntersectionStep(
 // Assign to module object for spying
 pathFindingModuleInternal.getIntersectionStep = getIntersectionStep;
 
-export function getStepForwardIndices(
+export function getStepForwardPosition(
   map: Map,
   currentPosition: Position,
   previousPosition: Position
 ): Position | undefined {
   const direction: Direction = getDirection(previousPosition, currentPosition);
 
-  // Continue in the same direction
   const nextPosition: Position = {
     row: currentPosition.row + direction.vertical,
     column: currentPosition.column + direction.horizontal,
   };
 
-  const char: string | undefined = map[nextPosition.row]?.[nextPosition.column];
+  const char: string | undefined = getCharacterAtPosition(map, nextPosition);
   if (char && isValidForwardCharacter(char)) {
     return nextPosition;
   }
@@ -135,15 +134,15 @@ export function getStepForwardIndices(
 }
 
 // Assign to module object for spying
-pathFindingModuleInternal.getStepForwardIndices = getStepForwardIndices;
+pathFindingModuleInternal.getStepForwardPosition = getStepForwardPosition;
 
-export function getNextStepIndices(
+export function getNextStepPosition(
   map: Map,
   currentPosition: Position,
   previousPosition: Position | null
 ): Result<Position> {
   if (!previousPosition) {
-    return pathFindingModuleInternal.getFirstStepIndices(map, currentPosition);
+    return pathFindingModuleInternal.getFirstStepPosition(map, currentPosition);
   }
   const currentChar = getCharacterAtPosition(map, currentPosition);
 
@@ -152,7 +151,7 @@ export function getNextStepIndices(
   }
 
   if (!isIntersectionCharacter(currentChar)) {
-    const forwardStepResult = pathFindingModuleInternal.getStepForwardIndices(
+    const forwardStepResult = pathFindingModuleInternal.getStepForwardPosition(
       map,
       currentPosition,
       previousPosition
@@ -177,5 +176,4 @@ export function getNextStepIndices(
   return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
 }
 
-// Assign getNextStepIndices to the module object after it's defined
-pathFindingModuleInternal.getNextStepIndices = getNextStepIndices;
+pathFindingModuleInternal.getNextStepPosition = getNextStepPosition;

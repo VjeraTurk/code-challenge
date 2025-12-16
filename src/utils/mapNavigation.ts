@@ -1,32 +1,32 @@
 import type { Position, Direction, Map } from "../types";
-import { MAP_CHARACTERS } from "../constants";
+import { ERROR_MESSAGES, MAP_CHARACTERS } from "../constants";
 import {
   isCapitalLetterCharacter,
   isEndCharacter,
 } from "./characterValidation";
 import { isValidCharacter, isValidMap, isValidPosition } from "./validation";
 
-export function getCharacterIndices(map: Map, character: string): Position[] {
-  if (!isValidMap(map)) return [];
-  if (!isValidCharacter(character)) return [];
+export function getCharacterPositions(map: Map, character: string): Position[] {
+  if (!isValidMap(map)) throw new Error(ERROR_MESSAGES.INVALID_MAP);
+  if (!isValidCharacter(character)) throw new Error(ERROR_MESSAGES.INVALID_CHARACTER);
 
-  const indices: Position[] = [];
+  const positions: Position[] = [];
 
   for (let rowIndex = 0; rowIndex < map.length; rowIndex++) {
     const row = map[rowIndex];
     if (!row || !row.length) continue;
     for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
       if (row[columnIndex] === character) {
-        indices.push({ row: rowIndex, column: columnIndex });
+        positions.push({ row: rowIndex, column: columnIndex });
       }
     }
   }
-  return indices;
+  return positions;
 }
 
 export function getDirection(from: Position, to: Position): Direction {
   if (!isValidPosition(from) || !isValidPosition(to)) {
-    throw new Error("Invalid position");
+    throw new Error(ERROR_MESSAGES.INVALID_POSITION);
   }
   const verticalDiff: number = to.row - from.row;
   const horizontalDiff: number = to.column - from.column;
@@ -56,14 +56,10 @@ export function isValidNeighborForDirection(
     return true;
   }
 
-  // Direction-specific validation
   if (isHorizontal) {
-    // Horizontal direction requires - (horizontal line)
     return char === MAP_CHARACTERS.HORIZONTAL;
   }
-  // Vertical direction requires | (vertical line)
-  // Since DIRECTIONS only has horizontal or vertical movements,
-  // if not horizontal, it must be vertical
+
   return isVertical && char === MAP_CHARACTERS.VERTICAL;
 }
 
@@ -81,7 +77,7 @@ export function getNeighbors(
     direction: dir,
   }))
     .filter((pos) => {
-      const char = map[pos.row]?.[pos.column];
+      const char = getCharacterAtPosition(map, pos);
       return (
         char &&
         isValid(char) &&
@@ -91,7 +87,7 @@ export function getNeighbors(
     .map(({ row, column }) => ({ row, column }));
 }
 
-export function isIndexVisited(
+export function isPositionVisited(
   characterPath: Position[],
   position : Position
 ): boolean {

@@ -3,10 +3,10 @@ import * as mapNavigationModule from "../utils/mapNavigation";
 import {
   isMovingHorizontally,
   isMovingVertically,
-  getFirstStepIndices,
+  getFirstStepPosition,
   getIntersectionStep,
-  getStepForwardIndices,
-  getNextStepIndices,
+  getStepForwardPosition,
+  getNextStepPosition,
   pathFindingModuleInternal,
 } from "../utils/pathFinding";
 import type { Position, Map } from "../types";
@@ -51,11 +51,11 @@ describe("pathFinding", () => {
     });
   });
 
-  describe("getFirstStepIndices", () => {
+  describe("getFirstStepPosition", () => {
     it("should return error when position is invalid", () => {
       const map: Map = [["@", "-", "x"]];
       const position: Position = { row: -1, column: 0 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe("Invalid position");
@@ -68,7 +68,7 @@ describe("pathFinding", () => {
         [" ", " "],
       ];
       const position: Position = { row: 0, column: 0 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
@@ -87,7 +87,7 @@ describe("pathFinding", () => {
 
       const map: Map = [["@", "-"]];
       const position: Position = { row: 0, column: 0 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -104,7 +104,7 @@ describe("pathFinding", () => {
         [" ", "-", " "],
       ];
       const position: Position = { row: 1, column: 1 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(
@@ -120,7 +120,7 @@ describe("pathFinding", () => {
         [" ", " ", " "],
       ];
       const position: Position = { row: 1, column: 1 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
@@ -134,7 +134,7 @@ describe("pathFinding", () => {
         [" ", " ", " "],
       ];
       const position: Position = { row: 1, column: 1 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 1, column: 2 });
@@ -148,7 +148,7 @@ describe("pathFinding", () => {
         [" ", " ", " "],
       ];
       const position: Position = { row: 1, column: 1 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 0, column: 1 });
@@ -162,7 +162,7 @@ describe("pathFinding", () => {
         [" ", " ", " "],
       ];
       const position: Position = { row: 1, column: 1 };
-      const result = getFirstStepIndices(map, position);
+      const result = getFirstStepPosition(map, position);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 1, column: 2 });
@@ -314,12 +314,12 @@ describe("pathFinding", () => {
     });
   });
 
-  describe("getStepForwardIndices", () => {
+  describe("getStepForwardPosition", () => {
     it("should return next position when continuing in same direction", () => {
       const map: Map = [["@", "-", "-", "A"]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toEqual({ row: 0, column: 2 });
     });
 
@@ -327,7 +327,7 @@ describe("pathFinding", () => {
       const map: Map = [["@"], ["|"], ["A"]];
       const current: Position = { row: 1, column: 0 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toEqual({ row: 2, column: 0 });
     });
 
@@ -335,7 +335,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-", " "]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toBeUndefined();
     });
 
@@ -343,7 +343,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-"]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toBeUndefined();
     });
 
@@ -351,7 +351,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-", "A", "-"]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toEqual({ row: 0, column: 2 });
     });
 
@@ -359,7 +359,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-", MAP_CHARACTERS.END]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toEqual({ row: 0, column: 2 });
     });
 
@@ -367,37 +367,37 @@ describe("pathFinding", () => {
       const map: Map = [["A", "-", "@"]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 2 };
-      const result = getStepForwardIndices(map, current, previous);
+      const result = getStepForwardPosition(map, current, previous);
       expect(result).toEqual({ row: 0, column: 0 });
     });
   });
 
-  describe("getNextStepIndices", () => {
-    it("should call getFirstStepIndices when previousPosition is null", () => {
+  describe("getNextStepPosition", () => {
+    it("should call getFirstStepPosition when previousPosition is null", () => {
       const map: Map = [
         [" ", " ", " "],
         [" ", "@", "-"],
         [" ", " ", " "],
       ];
       const current: Position = { row: 1, column: 1 };
-      const getFirstStepIndicesSpy = jest.spyOn(
+      const getFirstStepPositionSpy = jest.spyOn(
         pathFindingModuleInternal,
-        "getFirstStepIndices"
+        "getFirstStepPosition"
       );
-      const result = getNextStepIndices(map, current, null);
+      const result = getNextStepPosition(map, current, null);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 1, column: 2 });
       }
-      expect(getFirstStepIndicesSpy).toHaveBeenCalledTimes(1);
-      expect(getFirstStepIndicesSpy).toHaveBeenCalledWith(map, current);
+      expect(getFirstStepPositionSpy).toHaveBeenCalledTimes(1);
+      expect(getFirstStepPositionSpy).toHaveBeenCalledWith(map, current);
     });
 
     it("should continue forward when not at intersection", () => {
       const map: Map = [["@", "-", "-", "A"]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value).toEqual({ row: 0, column: 2 });
@@ -413,13 +413,13 @@ describe("pathFinding", () => {
       const previous: Position = { row: 1, column: 0 };
 
       // Now we can use jest.spyOn with CommonJS!
-      // The spy will intercept calls to getIntersectionStep even when called from within getNextStepIndices
+      // The spy will intercept calls to getIntersectionStep even when called from within getNextStepPosition
       const getIntersectionStepSpy = jest.spyOn(
         pathFindingModuleInternal,
         "getIntersectionStep"
       );
 
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -446,7 +446,7 @@ describe("pathFinding", () => {
       ];
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       expect(result.success).toBe(true);
       // Forward step fails (space is invalid), so should treat letter as intersection and turn
       if (result.success) {
@@ -458,7 +458,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-", " "]];
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
@@ -469,7 +469,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-"]];
       const current: Position = { row: 0, column: 2 }; // Out of bounds
       const previous: Position = { row: 0, column: 1 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
@@ -480,7 +480,7 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-"]];
       const current: Position = { row: 5, column: 0 }; // Invalid row
       const previous: Position = { row: 0, column: 0 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
@@ -495,7 +495,7 @@ describe("pathFinding", () => {
       ];
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
-      const result = getNextStepIndices(map, current, previous);
+      const result = getNextStepPosition(map, current, previous);
       // Should check forward first, but since it's an intersection, should turn
       expect(result.success).toBe(true);
     });

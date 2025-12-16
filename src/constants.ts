@@ -17,4 +17,7 @@ export const ERROR_MESSAGES = {
   FAKE_TURN: "Fake turn",
   FORK_IN_PATH: "Fork in path",
   CHARACTER_NOT_FOUND_AT_CURRENT_POSITION: "Character not found at current position",
+  INVALID_MAP: "Invalid map",
+  INVALID_POSITION: "Invalid position",
+  INVALID_CHARACTER: "Invalid character",
 } as const;

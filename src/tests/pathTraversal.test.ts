@@ -13,14 +13,14 @@ import {
   mapForkInPath,
   mapFakeTurn,
 } from "../tests/data/mock";
-import { getCharacterIndices } from "../utils/mapNavigation";
+import { getCharacterPositions } from "../utils/mapNavigation";
 
 describe("pathTraversal", () => {
   describe("traversePath", () => {
     describe("successful path traversal", () => {
       it("should traverse a basic example path correctly", () => {
-        const start = getCharacterIndices(mapBasicExample, "@")[0];
-        const end = getCharacterIndices(mapBasicExample, "x")[0];
+        const start = getCharacterPositions(mapBasicExample, "@")[0];
+        const end = getCharacterPositions(mapBasicExample, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -36,8 +36,8 @@ describe("pathTraversal", () => {
       });
 
       it("should go straight through intersections", () => {
-        const start = getCharacterIndices(mapGoStraightThroughIntersections, "@")[0];
-        const end = getCharacterIndices(mapGoStraightThroughIntersections, "x")[0];
+        const start = getCharacterPositions(mapGoStraightThroughIntersections, "@")[0];
+        const end = getCharacterPositions(mapGoStraightThroughIntersections, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -55,8 +55,8 @@ describe("pathTraversal", () => {
       });
 
       it("should find letters on turns", () => {
-        const start = getCharacterIndices(mapLettersMayBeFoundOnTurns, "@")[0];
-        const end = getCharacterIndices(mapLettersMayBeFoundOnTurns, "x")[0];
+        const start = getCharacterPositions(mapLettersMayBeFoundOnTurns, "@")[0];
+        const end = getCharacterPositions(mapLettersMayBeFoundOnTurns, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -72,8 +72,8 @@ describe("pathTraversal", () => {
       });
 
       it("should not collect a letter from the same location twice", () => {
-        const start = getCharacterIndices(mapDoNotCollectALetterFromTheSameLocationTwice, "@")[0];
-        const end = getCharacterIndices(mapDoNotCollectALetterFromTheSameLocationTwice, "x")[0];
+        const start = getCharacterPositions(mapDoNotCollectALetterFromTheSameLocationTwice, "@")[0];
+        const end = getCharacterPositions(mapDoNotCollectALetterFromTheSameLocationTwice, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -91,8 +91,8 @@ describe("pathTraversal", () => {
       });
 
       it("should keep direction even in a compact space", () => {
-        const start = getCharacterIndices(mapKeepDirectionEvenInACompactSpace, "@")[0];
-        const end = getCharacterIndices(mapKeepDirectionEvenInACompactSpace, "x")[0];
+        const start = getCharacterPositions(mapKeepDirectionEvenInACompactSpace, "@")[0];
+        const end = getCharacterPositions(mapKeepDirectionEvenInACompactSpace, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -108,8 +108,8 @@ describe("pathTraversal", () => {
       });
 
       it("should ignore stuff after end of path", () => {
-        const start = getCharacterIndices(mapIgnoreStuffAfterEndOfPath, "@")[0];
-        const end = getCharacterIndices(mapIgnoreStuffAfterEndOfPath, "x")[0];
+        const start = getCharacterPositions(mapIgnoreStuffAfterEndOfPath, "@")[0];
+        const end = getCharacterPositions(mapIgnoreStuffAfterEndOfPath, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -125,8 +125,8 @@ describe("pathTraversal", () => {
       });
 
       it("should handle first step intersection", () => {
-        const start = getCharacterIndices(mapFirstStepIntersection, "@")[0];
-        const end = getCharacterIndices(mapFirstStepIntersection, "x")[0];
+        const start = getCharacterPositions(mapFirstStepIntersection, "@")[0];
+        const end = getCharacterPositions(mapFirstStepIntersection, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -176,8 +176,8 @@ describe("pathTraversal", () => {
 
     describe("error handling", () => {
       it("should throw error when path is broken", () => {
-        const start = getCharacterIndices(mapBrokenPath, "@")[0];
-        const end = getCharacterIndices(mapBrokenPath, "x")[0];
+        const start = getCharacterPositions(mapBrokenPath, "@")[0];
+        const end = getCharacterPositions(mapBrokenPath, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -189,8 +189,8 @@ describe("pathTraversal", () => {
       });
 
       it("should throw error when fork in path", () => {
-        const start = getCharacterIndices(mapForkInPath, "@")[0];
-        const end = getCharacterIndices(mapForkInPath, "x")[0];
+        const start = getCharacterPositions(mapForkInPath, "@")[0];
+        const end = getCharacterPositions(mapForkInPath, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -202,8 +202,8 @@ describe("pathTraversal", () => {
       });
 
       it("should throw error when fake turn encountered", () => {
-        const start = getCharacterIndices(mapFakeTurn, "@")[0];
-        const end = getCharacterIndices(mapFakeTurn, "x")[0];
+        const start = getCharacterPositions(mapFakeTurn, "@")[0];
+        const end = getCharacterPositions(mapFakeTurn, "x")[0];
 
         if (!start || !end) {
           throw new Error("Start or end not found in map");
@@ -233,7 +233,7 @@ describe("pathTraversal", () => {
         const result = traversePath(map, invalidStart, end);
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.message).toBe("Invalid start or end position");
+          expect(result.error.message).toBe("Invalid position");
         }
       });
 
@@ -244,7 +244,7 @@ describe("pathTraversal", () => {
         const result = traversePath(map, start, invalidEnd);
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.message).toBe("Invalid start or end position");
+          expect(result.error.message).toBe("Invalid position");
         }
       });
     });

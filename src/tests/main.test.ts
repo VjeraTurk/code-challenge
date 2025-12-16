@@ -147,10 +147,10 @@ describe("Invalid characters tests", () => {
 
   it("should throw error: character not found at current position", () => {
     // To trigger line 46, we need to reach a position during traversal where character is undefined
-    // We'll mock getNextStepIndices to return a position that's out of bounds
+    // We'll mock getNextStepPosition to return a position that's out of bounds
     const getNextStepSpy = jest.spyOn(
       require("../utils/pathFinding"),
-      "getNextStepIndices"
+      "getNextStepPosition"
     );
 
     getNextStepSpy

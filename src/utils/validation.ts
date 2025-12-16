@@ -1,12 +1,12 @@
 import type { Position, Map, Result } from "../types";
 import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants";
-import { getCharacterIndices } from "./mapNavigation";
+import { getCharacterPositions } from "./mapNavigation";
 
 export function validateMapStartAndEnd(
   map: Map
 ): Result<{ start: Position; end: Position }> {
-  const start = getCharacterIndices(map, MAP_CHARACTERS.START);
-  const end = getCharacterIndices(map, MAP_CHARACTERS.END);
+  const start = getCharacterPositions(map, MAP_CHARACTERS.START);
+  const end = getCharacterPositions(map, MAP_CHARACTERS.END);
 
   if (start.length < 1 || end.length < 1) {
     return {
@@ -23,14 +23,16 @@ export function validateMapStartAndEnd(
 
   const startPosition = start[0];
   const endPosition = end[0];
+
   if (!startPosition || !endPosition) {
     return {
       success: false,
       error: new Error(ERROR_MESSAGES.START_OR_END_NOT_FOUND),
     };
   }
+
   if (!isValidPosition(startPosition) || !isValidPosition(endPosition)) {
-    return { success: false, error: new Error("Invalid position") };
+    return { success: false, error: new Error(ERROR_MESSAGES.INVALID_POSITION) };
   }
 
   return { success: true, value: { start: startPosition, end: endPosition } };
