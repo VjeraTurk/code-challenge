@@ -3,12 +3,13 @@ import { ERROR_MESSAGES, MAP_CHARACTERS } from "../constants";
 import {
   isCapitalLetterCharacter,
   isEndCharacter,
+  isIntersectionCharacter,
 } from "./characterValidation";
-import { isValidCharacter, isValidMap, isValidPosition } from "./validation";
+import { isValidString, isValidMap, isValidPosition } from "./validation";
 
 export function getCharacterPositions(map: Map, character: string): Position[] {
   if (!isValidMap(map)) throw new Error(ERROR_MESSAGES.INVALID_MAP);
-  if (!isValidCharacter(character)) throw new Error(ERROR_MESSAGES.INVALID_CHARACTER);
+  if (!isValidString(character)) throw new Error(ERROR_MESSAGES.INVALID_CHARACTER);
 
   const positions: Position[] = [];
 
@@ -49,7 +50,7 @@ export function isValidNeighborForDirection(
 
   // Special characters are valid in any direction
   if (
-    char === MAP_CHARACTERS.INTERSECTION ||
+    isIntersectionCharacter(char)||
     isCapitalLetterCharacter(char) ||
     isEndCharacter(char)
   ) {

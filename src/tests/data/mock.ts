@@ -195,16 +195,15 @@ export const mapVerticalFakeTurn = [
   ["x"],
 ];
 
-//- the only valid characters are all uppercase letters (`A`-`Z`) and other characters appearing in the example maps;
-//  anything else found must result in an error
-
+// the only valid characters are all uppercase letters (`A`-`Z`) and other characters appearing in the example maps;
+// anything else found must result in an error
 export const mapInvalidCharacter = [
-  ["@"],
-  ["-"],
-  ["a"],
-  ["-"],
-  ["x"]
-];
+  ["@","-","a","-","x"]
+]; //  will throw broken path error
+
+export const mapInvalidMap = []
+
+export const mapInvalidMap2 = [[],[],[]]
 
 export const mapFirstStepIntersection = [
   [" ", " ", " ", "+","-", "A", " ", " ", " ", " ", " "],
@@ -221,3 +220,9 @@ export const mapNoValidNeighborsStartingPosition = [
   ["|", " ", " "],
   ["x", " ", " "],
 ];
+
+export const mapInvalidCharacterMap = [["@", "","x"]]
+
+export const mapInvalidCharacterMap2 = [["@", undefined,"x"]]
+
+export const mapInvalidCharacterMap3 = [["@", "abcd","x"]]

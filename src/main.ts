@@ -5,6 +5,7 @@ import { validateMapStartAndEnd } from "./utils/validation";
 export function main(
   map: Map
 ): { characterPath: string[]; letters: string[] } {
+
   const validation = validateMapStartAndEnd(map);
   if (!validation.success) {
     throw validation.error;

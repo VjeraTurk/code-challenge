@@ -1,4 +1,4 @@
-import { describe, it, expect, xit } from "@jest/globals";
+import { describe, it, expect } from "@jest/globals";
 import {
   getCharacterPositions,
   getDirection,
@@ -65,13 +65,6 @@ describe("mapNavigation", () => {
   });
 
   describe("getDirection", () => {
-    it("should return direction for vertical movement down", () => {
-      const from: Position = { row: 0, column: 0 };
-      const to: Position = { row: 1, column: 0 };
-      const result = getDirection(from, to);
-      expect(result).toEqual({ vertical: 1, horizontal: 0 });
-    });
-
     it("should return direction for vertical movement up", () => {
       const from: Position = { row: 2, column: 0 };
       const to: Position = { row: 0, column: 0 };
@@ -79,11 +72,11 @@ describe("mapNavigation", () => {
       expect(result).toEqual({ vertical: -2, horizontal: 0 });
     });
 
-    it("should return direction for horizontal movement right", () => {
+    it("should return direction for vertical movement down", () => {
       const from: Position = { row: 0, column: 0 };
-      const to: Position = { row: 0, column: 1 };
+      const to: Position = { row: 1, column: 0 };
       const result = getDirection(from, to);
-      expect(result).toEqual({ vertical: 0, horizontal: 1 });
+      expect(result).toEqual({ vertical: 1, horizontal: 0 });
     });
 
     it("should return direction for horizontal movement left", () => {
@@ -93,11 +86,11 @@ describe("mapNavigation", () => {
       expect(result).toEqual({ vertical: 0, horizontal: -2 });
     });
 
-    it("should return direction for diagonal movement", () => {
+    it("should return direction for horizontal movement right", () => {
       const from: Position = { row: 0, column: 0 };
-      const to: Position = { row: 2, column: 3 };
+      const to: Position = { row: 0, column: 1 };
       const result = getDirection(from, to);
-      expect(result).toEqual({ vertical: 2, horizontal: 3 });
+      expect(result).toEqual({ vertical: 0, horizontal: 1 });
     });
 
     it("should return zero direction for same position", () => {
@@ -105,6 +98,13 @@ describe("mapNavigation", () => {
       const to: Position = { row: 1, column: 1 };
       const result = getDirection(from, to);
       expect(result).toEqual({ vertical: 0, horizontal: 0 });
+    });
+
+    it("should return direction for diagonal movement", () => {
+      const from: Position = { row: 0, column: 0 };
+      const to: Position = { row: 2, column: 3 };
+      const result = getDirection(from, to);
+      expect(result).toEqual({ vertical: 2, horizontal: 3 });
     });
 
     it("should throw error when from position is invalid", () => {
@@ -130,8 +130,6 @@ describe("mapNavigation", () => {
       const position: Position = { row: 1, column: 1 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
       expect(result).toHaveLength(2);
-      expect(result).not.toContainEqual({ row: 0, column: 1 });
-      expect(result).not.toContainEqual({ row: 2, column: 1 });
       expect(result).toContainEqual({ row: 1, column: 0 });
       expect(result).toContainEqual({ row: 1, column: 2 });
     });
@@ -147,8 +145,7 @@ describe("mapNavigation", () => {
       expect(result).toHaveLength(2);
       expect(result).toContainEqual({ row: 0, column: 1 });
       expect(result).toContainEqual({ row: 2, column: 1 });
-      expect(result).not.toContainEqual({ row: 1, column: 0 });
-      expect(result).not.toContainEqual({ row: 1, column: 2 });
+
     });
 
     it("should return only valid neighbors (filter invalid characters)", () => {

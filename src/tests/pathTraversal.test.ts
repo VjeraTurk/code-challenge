@@ -1,6 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 import { traversePath } from "../utils/pathTraversal";
 import type { Position, Map } from "../types";
+import { ERROR_MESSAGES } from "../constants";
 import {
   mapBasicExample,
   mapGoStraightThroughIntersections,
@@ -175,7 +176,7 @@ describe("pathTraversal", () => {
     });
 
     describe("error handling", () => {
-      it("should throw error when path is broken", () => {
+      it("should return error when path is broken", () => {
         const start = getCharacterPositions(mapBrokenPath, "@")[0];
         const end = getCharacterPositions(mapBrokenPath, "x")[0];
 
@@ -183,12 +184,14 @@ describe("pathTraversal", () => {
           throw new Error("Start or end not found in map");
         }
 
-        expect(() => {
-          traversePath(mapBrokenPath, start, end);
-        }).toThrow();
+        const result = traversePath(mapBrokenPath, start, end);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Broken path");
+        }
       });
 
-      it("should throw error when fork in path", () => {
+      it("should return error when fork in path", () => {
         const start = getCharacterPositions(mapForkInPath, "@")[0];
         const end = getCharacterPositions(mapForkInPath, "x")[0];
 
@@ -196,12 +199,14 @@ describe("pathTraversal", () => {
           throw new Error("Start or end not found in map");
         }
 
-        expect(() => {
-          traversePath(mapForkInPath, start, end);
-        }).toThrow();
+        const result = traversePath(mapForkInPath, start, end);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Fork in path");
+        }
       });
 
-      it("should throw error when fake turn encountered", () => {
+      it("should return error when fake turn encountered", () => {
         const start = getCharacterPositions(mapFakeTurn, "@")[0];
         const end = getCharacterPositions(mapFakeTurn, "x")[0];
 
@@ -209,21 +214,12 @@ describe("pathTraversal", () => {
           throw new Error("Start or end not found in map");
         }
 
-        expect(() => {
+        const result = traversePath(mapFakeTurn, start, end);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Fake turn");
+        }
           traversePath(mapFakeTurn, start, end);
-        }).toThrow();
-      });
-
-      it("should throw error when character not found at position", () => {
-        const map: Map = [
-          ["@", "-"],
-        ];
-        const start: Position = { row: 0, column: 0 };
-        const invalidPosition: Position = { row: 0, column: 5 }; // Out of bounds
-
-        expect(() => {
-          traversePath(map, start, invalidPosition);
-        }).toThrow();
       });
 
       it("should return error when startPosition is invalid", () => {
@@ -250,13 +246,16 @@ describe("pathTraversal", () => {
     });
 
     describe("edge cases", () => {
-        it("should throw error when start equals end (no valid path)", () => {
+        it("should return error when start equals end (no valid path)", () => {
         const map: Map = [["@"]];
         const position: Position = { row: 0, column: 0 };
 
-        expect(() => {
+        const result = traversePath(map, position, position);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toBe("Broken path");
+        }
           traversePath(map, position, position);
-        }).toThrow();
       });
 
       it("should handle vertical path", () => {
@@ -308,6 +307,14 @@ describe("pathTraversal", () => {
         if (result.success) {
           expect(result.value.letters.join("")).toBe("ABC");
         }
+      });
+      it("should throw error when character not found at start position", () => {
+        // Create a map where the start position has no character (undefined or empty row)
+        const map: Map = [[]]; // Empty row - position (0,0) has no character
+        const start: Position = { row: 0, column: 0 };
+        const end: Position = { row: 0, column: 0 };
+
+        expect(() => traversePath(map, start, end)).toThrow(ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION);
       });
     });
   });

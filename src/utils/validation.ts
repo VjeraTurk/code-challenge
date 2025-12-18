@@ -38,7 +38,7 @@ export function validateMapStartAndEnd(
   return { success: true, value: { start: startPosition, end: endPosition } };
 }
 
-export function isValidCharacter(character: string): boolean {
+export function isValidString(character: string): boolean {
   return typeof character === "string" && character.length === 1;
 }
 

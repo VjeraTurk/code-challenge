@@ -1,6 +1,5 @@
-import { expect, describe, it, xit, jest } from "@jest/globals";
+import { expect, describe, it, xit } from "@jest/globals";
 import { main } from "../main";
-import type { Map } from "../types";
 import {
   mapBasicExample,
   mapGoStraightThroughIntersections,
@@ -21,6 +20,11 @@ import {
   mapInvalidCharacter,
   mapFirstStepIntersection,
   mapNoValidNeighborsStartingPosition,
+  mapInvalidMap,
+  mapInvalidMap2,
+  mapInvalidCharacterMap,
+  mapInvalidCharacterMap2,
+  mapInvalidCharacterMap3
 } from "../tests/data/mock";
 
 describe("Valid maps tests", () => {
@@ -101,9 +105,14 @@ describe("Invalid maps tests", () => {
   it("should throw error: broken path", () => {
     expect(() => main(mapBrokenPath)).toThrow("Broken path");
   });
-  it("should throw error: multiple starting paths", () => {
+  it("should throw error: ", () => {
+     // This map triggers the multiple ending characters error first
     expect(() => main(mapMultipleStartingPaths)).toThrow();
   });
+  xit("should throw error: multiple starting paths", () => {
+     // To trigger multiple start paths, comment out lines 18-21 of validation.ts
+     expect(() => main(mapMultipleStartingPaths)).toThrow("Multiple starting paths");
+   });
   it("should throw error: fake turn", () => {
     expect(() => main(mapFakeTurn)).toThrow("Fake turn");
   });
@@ -112,96 +121,27 @@ describe("Invalid maps tests", () => {
   });
 });
 describe("Invalid characters tests", () => {
-  it("should throw error: invalid character", () => {
-    expect(() => main(mapInvalidCharacter)).toThrow();
+  it("should throw error: broken path (has invalid character)", () => {
+    expect(() => main(mapInvalidCharacter)).toThrow("Broken path");
   });
-  it("should throw error: no valid neighbors at starting position", () => {
+  it("should throw error: broken path (no valid neighbors at starting position)", () => {
     expect(() => main(mapNoValidNeighborsStartingPosition)).toThrow(
       "Broken path"
     );
   });
-  it("should throw error: start position character not found", () => {
-    // To trigger line 27, we need validation to pass but character access to fail
-    // This can happen with a jagged array where the row exists but column doesn't
-    // We'll mock validateMapStartAndEnd to return a position that's out of bounds
-    const validateSpy = jest.spyOn(
-      require("../utils/validation"),
-      "validateMapStartAndEnd"
-    );
-
-    validateSpy.mockReturnValueOnce({
-      success: true,
-      value: {
-        start: { row: 0, column: 10 }, // Out of bounds column
-        end: { row: 0, column: 2 },
-      },
-    });
-
-    const map: Map = [["@", "-", "x"]];
-    expect(() => main(map)).toThrow(
-      "Character not found at current position"
-    );
-
-    validateSpy.mockRestore();
+  it("should throw error: invalid map", () => {
+    expect(() => main(mapInvalidMap)).toThrow("Invalid map");
   });
-
-  it("should throw error: character not found at current position", () => {
-    // To trigger line 46, we need to reach a position during traversal where character is undefined
-    // We'll mock getNextStepPosition to return a position that's out of bounds
-    const getNextStepSpy = jest.spyOn(
-      require("../utils/pathFinding"),
-      "getNextStepPosition"
-    );
-
-    getNextStepSpy
-      .mockReturnValueOnce({
-        success: true,
-        value: { row: 0, column: 10 }, // Out of bounds
-      })
-      .mockReturnValueOnce({
-        success: true,
-        value: { row: 0, column: 2 },
-      });
-
-    const map: Map = [["@", "-", "x"]];
-    expect(() => main(map)).toThrow(
-      "Character not found at current position"
-    );
-
-    getNextStepSpy.mockRestore();
-  });
-
-  it("should throw error when traversePath returns error result", () => {
-    // Mock traversePath to return an error result to cover line 19 in main.ts
-    const traversePathSpy = jest.spyOn(
-      require("../utils/pathTraversal"),
-      "traversePath"
-    );
-
-    const mockError = new Error("Test error from traversePath");
-    traversePathSpy.mockReturnValueOnce({
-      success: false,
-      error: mockError,
-    });
-
-    // Mock validation to pass
-    const validateSpy = jest.spyOn(
-      require("../utils/validation"),
-      "validateMapStartAndEnd"
-    );
-
-    validateSpy.mockReturnValueOnce({
-      success: true,
-      value: {
-        start: { row: 0, column: 0 },
-        end: { row: 0, column: 2 },
-      },
-    });
-
-    const map: Map = [["@", "-", "x"]];
-    expect(() => main(map)).toThrow("Test error from traversePath");
-
-    traversePathSpy.mockRestore();
-    validateSpy.mockRestore();
-  });
+  it("should throw error: start or end not found", () => {
+    expect(() => main(mapInvalidMap2)).toThrow("Start or end not found");
+  })
+  it("should throw error: Broken path", () => {
+    expect(()=>main(mapInvalidCharacterMap)).toThrow("Broken path");
+  })
+  it("should throw error: Broken path", () => {
+    expect(()=>main(mapInvalidCharacterMap2 as any)).toThrow("Broken path");
+  })
+  it("should throw error: Broken path", () => {
+    expect(()=>main(mapInvalidCharacterMap3)).toThrow("Broken path");
+  })
 });

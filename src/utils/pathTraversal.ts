@@ -49,7 +49,7 @@ export function traversePath(
     while (true) {
       const nextStep = getNextStepPosition(map, currentPosition, previousPosition);
       if (!nextStep.success) {
-        throw nextStep.error;
+        return { success: false, error: nextStep.error };
       }
 
       previousPosition = currentPosition;

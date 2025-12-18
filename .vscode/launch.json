@@ -33,7 +33,7 @@
       "request": "launch",
       "name": "Debug Jest Tests",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["test", "--", "--runInBand", "--no-coverage"],
+      "runtimeArgs": ["test", "--", "--runInBand", "--coverage"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**"],

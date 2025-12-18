@@ -147,7 +147,7 @@ export function getNextStepPosition(
   const currentChar = getCharacterAtPosition(map, currentPosition);
 
   if (!currentChar) {
-    return { success: false, error: new Error(ERROR_MESSAGES.BROKEN_PATH) };
+    return { success: false, error: new Error(ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION) };
   }
 
   if (!isIntersectionCharacter(currentChar)) {

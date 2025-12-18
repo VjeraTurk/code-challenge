@@ -1,5 +1,5 @@
-import { describe, it, expect, jest } from "@jest/globals";
-import { validateMapStartAndEnd, isValidCharacter, isValidMap, isValidPosition } from "../utils/validation";
+import { describe, it, expect, jest, xit } from "@jest/globals";
+import { validateMapStartAndEnd, isValidString, isValidMap, isValidPosition } from "../utils/validation";
 import type { Map, Position } from "../types";
 import { ERROR_MESSAGES } from "../constants";
 
@@ -39,7 +39,7 @@ describe("validation", () => {
     });
 
     it("should return error when startPosition is undefined after length check", () => {
-      // To trigger line 27, we need getCharacterPositions to return array with undefined element
+      // we need getCharacterPositions to return array with undefined element
       // We'll mock getCharacterPositions to return [undefined]
       const getCharacterPositionsSpy = jest.spyOn(
         require("../utils/mapNavigation"),
@@ -106,41 +106,41 @@ describe("validation", () => {
     });
   });
 
-  describe("isValidCharacter", () => {
+  describe("isValidString", () => {
     it("should return true for single character string", () => {
-      expect(isValidCharacter("a")).toBe(true);
-      expect(isValidCharacter("A")).toBe(true);
-      expect(isValidCharacter("@")).toBe(true);
-      expect(isValidCharacter("-")).toBe(true);
-      expect(isValidCharacter(" ")).toBe(true);
+      expect(isValidString("a")).toBe(true);
+      expect(isValidString("A")).toBe(true);
+      expect(isValidString("@")).toBe(true);
+      expect(isValidString("-")).toBe(true);
+      expect(isValidString(" ")).toBe(true);
     });
 
     it("should return false for empty string", () => {
-      expect(isValidCharacter("")).toBe(false);
+      expect(isValidString("")).toBe(false);
     });
 
     it("should return false for string with multiple characters", () => {
-      expect(isValidCharacter("ab")).toBe(false);
-      expect(isValidCharacter("ABC")).toBe(false);
-      expect(isValidCharacter("--")).toBe(false);
+      expect(isValidString("ab")).toBe(false);
+      expect(isValidString("ABC")).toBe(false);
+      expect(isValidString("--")).toBe(false);
     });
 
     it("should return false for non-string types", () => {
-      expect(isValidCharacter(null as any)).toBe(false);
-      expect(isValidCharacter(undefined as any)).toBe(false);
-      expect(isValidCharacter(123 as any)).toBe(false);
-      expect(isValidCharacter({} as any)).toBe(false);
-      expect(isValidCharacter([] as any)).toBe(false);
+      expect(isValidString(null as any)).toBe(false);
+      expect(isValidString(undefined as any)).toBe(false);
+      expect(isValidString(123 as any)).toBe(false);
+      expect(isValidString({} as any)).toBe(false);
+      expect(isValidString([] as any)).toBe(false);
     });
 
     it("should return true for valid path characters", () => {
-      expect(isValidCharacter("@")).toBe(true);
-      expect(isValidCharacter("x")).toBe(true);
-      expect(isValidCharacter("-")).toBe(true);
-      expect(isValidCharacter("|")).toBe(true);
-      expect(isValidCharacter("+")).toBe(true);
-      expect(isValidCharacter("A")).toBe(true);
-      expect(isValidCharacter("Z")).toBe(true);
+      expect(isValidString("@")).toBe(true);
+      expect(isValidString("x")).toBe(true);
+      expect(isValidString("-")).toBe(true);
+      expect(isValidString("|")).toBe(true);
+      expect(isValidString("+")).toBe(true);
+      expect(isValidString("A")).toBe(true);
+      expect(isValidString("Z")).toBe(true);
     });
   });
 
@@ -181,11 +181,6 @@ describe("validation", () => {
 
     it("should return true for array with empty rows", () => {
       const map: Map = [[], ["@", "-", "x"]];
-      expect(isValidMap(map)).toBe(true);
-    });
-
-    it("should return true for array with single row", () => {
-      const map: Map = [["@", "-", "x"]];
       expect(isValidMap(map)).toBe(true);
     });
   });

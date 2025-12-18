@@ -57,7 +57,7 @@ describe("characterValidation", () => {
     });
 
     it("should return false for special character", () => {
-      expect(isCapitalLetterCharacter("@")).toBe(false);
+      expect(isCapitalLetterCharacter("!")).toBe(false);
     });
   });
 
