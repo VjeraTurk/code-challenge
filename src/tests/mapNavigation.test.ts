@@ -324,16 +324,13 @@ describe("mapNavigation", () => {
 
     describe("horizontal direction validation", () => {
       it("should return true for horizontal character (-) in horizontal direction", () => {
+        // --
         expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, horizontalRight)).toBe(true);
         expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, horizontalLeft)).toBe(true);
       });
 
-      it("should return false for horizontal character (-) in vertical direction", () => {
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, verticalDown)).toBe(false);
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, verticalUp)).toBe(false);
-      });
-
       it("should return false for vertical character (|) in horizontal direction", () => {
+        // -| |-
         expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, horizontalRight)).toBe(false);
         expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, horizontalLeft)).toBe(false);
       });
@@ -341,13 +338,16 @@ describe("mapNavigation", () => {
 
     describe("vertical direction validation", () => {
       it("should return true for vertical character (|) in vertical direction", () => {
+        // |
+        // |
         expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, verticalDown)).toBe(true);
         expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, verticalUp)).toBe(true);
       });
-
-      it("should return false for vertical character (|) in horizontal direction", () => {
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, horizontalRight)).toBe(false);
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, horizontalLeft)).toBe(false);
+      it("should return false for horizontal character (-) in vertical direction", () => {
+        // - |
+        // | -
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, verticalDown)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, verticalUp)).toBe(false);
       });
     });
 
@@ -382,13 +382,27 @@ describe("mapNavigation", () => {
     describe("edge cases", () => {
       it("should handle zero direction (no movement)", () => {
         const zeroDirection: Direction = { vertical: 0, horizontal: 0 };
-        // Zero direction should not match horizontal or vertical
         expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, zeroDirection)).toBe(false);
         expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, zeroDirection)).toBe(false);
-        //TODO: check and re-think // But special characters should still be valid
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.INTERSECTION, zeroDirection)).toBe(true);
-        expect(isValidNeighborForDirection("A", zeroDirection)).toBe(true);
-        expect(isValidNeighborForDirection(MAP_CHARACTERS.END, zeroDirection)).toBe(true);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.INTERSECTION, zeroDirection)).toBe(false);
+        expect(isValidNeighborForDirection("A", zeroDirection)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.END, zeroDirection)).toBe(false);
+      });
+      it("should handle diagonal direction", () => {
+        const diagonalDirection: Direction = { vertical: 1, horizontal: 1 };
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, diagonalDirection)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, diagonalDirection)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.INTERSECTION, diagonalDirection)).toBe(false);
+        expect(isValidNeighborForDirection("A", diagonalDirection)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.END, diagonalDirection)).toBe(false);
+      });
+      it("should handle direction > 1", () => {
+        const direction: Direction = { vertical: 2, horizontal: 0 };
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.HORIZONTAL, direction)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.VERTICAL, direction)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.INTERSECTION, direction)).toBe(false);
+        expect(isValidNeighborForDirection("A", direction)).toBe(false);
+        expect(isValidNeighborForDirection(MAP_CHARACTERS.END, direction)).toBe(false);
       });
     });
   });

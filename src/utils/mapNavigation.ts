@@ -45,9 +45,13 @@ export function isValidNeighborForDirection(
   char: string,
   direction: Direction
 ): boolean {
-  const isHorizontal = direction.horizontal !== 0;
-  const isVertical = direction.vertical !== 0;
+  // For direction > 1 character are no longer immediate neighbors
+  const isHorizontal = (direction.horizontal == 1 || direction.horizontal == -1)  && direction.vertical === 0;
+  const isVertical = (direction.vertical == 1 || direction.vertical == -1) && direction.horizontal === 0;
 
+  if(!isHorizontal && !isVertical) {
+    return false
+  }
   // Special characters are valid in any direction
   if (
     isIntersectionCharacter(char)||
