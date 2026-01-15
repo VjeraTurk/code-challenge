@@ -15,6 +15,7 @@ import {
   mapFakeTurn,
 } from "../tests/data/mock";
 import { getCharacterPositions } from "../utils/mapNavigation";
+import { createSoftAssertions } from "./softAssertions";
 
 describe("pathTraversal", () => {
   describe("traversePath", () => {
@@ -22,14 +23,15 @@ describe("pathTraversal", () => {
       it("should traverse a basic example path correctly", () => {
         const start = getCharacterPositions(mapBasicExample, "@")[0];
         const end = getCharacterPositions(mapBasicExample, "x")[0];
+        const soft = createSoftAssertions();
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapBasicExample, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -38,19 +40,22 @@ describe("pathTraversal", () => {
           characterPath: "@---A---+|C|+---+|+-B-x",
           letters: "ACB",
         });
+
+        soft.assertAll();
       });
 
       it("should go straight through intersections", () => {
         const start = getCharacterPositions(mapGoStraightThroughIntersections, "@")[0];
         const end = getCharacterPositions(mapGoStraightThroughIntersections, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapGoStraightThroughIntersections, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -59,19 +64,22 @@ describe("pathTraversal", () => {
           characterPath: "@|A+---B--+|+--C-+|-||+---D--+|x",
           letters: "ABCD",
         });
+
+        soft.assertAll();
       });
 
       it("should find letters on turns", () => {
         const start = getCharacterPositions(mapLettersMayBeFoundOnTurns, "@")[0];
         const end = getCharacterPositions(mapLettersMayBeFoundOnTurns, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapLettersMayBeFoundOnTurns, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -80,19 +88,22 @@ describe("pathTraversal", () => {
           characterPath: "@---A---+|||C---+|+-B-x",
           letters: "ACB",
         });
+
+        soft.assertAll();
       });
 
       it("should not collect a letter from the same location twice", () => {
         const start = getCharacterPositions(mapDoNotCollectALetterFromTheSameLocationTwice, "@")[0];
         const end = getCharacterPositions(mapDoNotCollectALetterFromTheSameLocationTwice, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapDoNotCollectALetterFromTheSameLocationTwice, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -101,19 +112,22 @@ describe("pathTraversal", () => {
           characterPath: "@-G-O-+|+-+|O||+-O-N-+|I|+-+|+-I-+|ES|x",
           letters: "GOONIES",
         });
+
+        soft.assertAll();
       });
 
       it("should keep direction even in a compact space", () => {
         const start = getCharacterPositions(mapKeepDirectionEvenInACompactSpace, "@")[0];
         const end = getCharacterPositions(mapKeepDirectionEvenInACompactSpace, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapKeepDirectionEvenInACompactSpace, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -122,18 +136,21 @@ describe("pathTraversal", () => {
           characterPath: "@B+++B|+-L-+A+++A-+Hx",
           letters: "BLAH",
         });
+
+        soft.assertAll();
       });
 
       it("should ignore stuff after end of path", () => {
         const start = getCharacterPositions(mapIgnoreStuffAfterEndOfPath, "@")[0];
         const end = getCharacterPositions(mapIgnoreStuffAfterEndOfPath, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapIgnoreStuffAfterEndOfPath, start!, end!);
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -142,19 +159,22 @@ describe("pathTraversal", () => {
           characterPath: "@-A--+|+-B--x",
           letters: "AB",
         });
+
+        soft.assertAll();
       });
 
       it("should handle first step intersection", () => {
         const start = getCharacterPositions(mapFirstStepIntersection, "@")[0];
         const end = getCharacterPositions(mapFirstStepIntersection, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapFirstStepIntersection, start!, end!);
 
         const value = (result as { success: true; value: { characterPath: string[]; letters: string[] } }).value;
-        expect({
+        soft.expect({
           success: result.success,
           characterPath: value.characterPath.join(""),
           letters: value.letters.join(""),
@@ -163,6 +183,8 @@ describe("pathTraversal", () => {
           characterPath: "@+||+-A||x",
           letters: "A",
         });
+
+        soft.assertAll();
       });
 
       it("should include start and end characters in path", () => {
@@ -213,52 +235,59 @@ describe("pathTraversal", () => {
         const start = getCharacterPositions(mapBrokenPath, "@")[0];
         const end = getCharacterPositions(mapBrokenPath, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapBrokenPath, start!, end!);
-        expect({
+        soft.expect({
           success: result.success,
           errorMessage: (result as { success: false; error: Error }).error.message,
         }).toEqual({
           success: false,
           errorMessage: "Broken path",
         });
+
+        soft.assertAll();
       });
 
       it("should return error when fork in path", () => {
         const start = getCharacterPositions(mapForkInPath, "@")[0];
         const end = getCharacterPositions(mapForkInPath, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapForkInPath, start!, end!);
-        expect({
+        soft.expect({
           success: result.success,
           errorMessage: (result as { success: false; error: Error }).error.message,
         }).toEqual({
           success: false,
           errorMessage: "Fork in path",
         });
+
+        soft.assertAll();
       });
 
       it("should return error when fake turn encountered", () => {
         const start = getCharacterPositions(mapFakeTurn, "@")[0];
         const end = getCharacterPositions(mapFakeTurn, "x")[0];
 
-        expect(start).toBeDefined();
-        expect(end).toBeDefined();
+        const soft = createSoftAssertions();
+        soft.expect(start).toBeDefined();
+        soft.expect(end).toBeDefined();
 
         const result = traversePath(mapFakeTurn, start!, end!);
-        expect({
+        soft.expect({
           success: result.success,
           errorMessage: (result as { success: false; error: Error }).error.message,
         }).toEqual({
           success: false,
           errorMessage: "Fake turn",
         });
-        traversePath(mapFakeTurn, start!, end!);
+        soft.assertAll();
       });
 
       it("should return error when startPosition is invalid", () => {
@@ -303,7 +332,6 @@ describe("pathTraversal", () => {
           success: false,
           errorMessage: "Broken path",
         });
-        traversePath(map, position, position);
       });
 
       it("should handle vertical path", () => {

@@ -10,6 +10,7 @@ import {
 import type { Position, Map, Direction } from "../types";
 import { MAP_CHARACTERS } from "../constants";
 import { isValidForwardCharacter } from "../utils/characterValidation";
+import { createSoftAssertions } from "./softAssertions";
 
 describe("mapNavigation", () => {
   describe("getCharacterPositions", () => {
@@ -131,9 +132,13 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ row: 1, column: 0 });
-      expect(result).toContainEqual({ row: 1, column: 2 });
+      const soft = createSoftAssertions();
+
+      soft.expect(result).toHaveLength(2);
+      soft.expect(result).toContainEqual({ row: 1, column: 0 });
+      soft.expect(result).toContainEqual({ row: 1, column: 2 });
+
+      soft.assertAll();
     });
 
     it("should return all valid neighbors (vertical)", () => {
@@ -144,10 +149,13 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ row: 0, column: 1 });
-      expect(result).toContainEqual({ row: 2, column: 1 });
+      const soft = createSoftAssertions();
 
+      soft.expect(result).toHaveLength(2);
+      soft.expect(result).toContainEqual({ row: 0, column: 1 });
+      soft.expect(result).toContainEqual({ row: 2, column: 1 });
+
+      soft.assertAll();
     });
 
     it("should return only valid neighbors (filter invalid characters)", () => {
@@ -158,8 +166,12 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(1);
-      expect(result).toContainEqual({ row: 1, column: 2 });
+      const soft = createSoftAssertions();
+
+      soft.expect(result).toHaveLength(1);
+      soft.expect(result).toContainEqual({ row: 1, column: 2 });
+
+      soft.assertAll();
     });
 
     it("should return empty array when no valid neighbors", () => {
@@ -180,9 +192,13 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 0, column: 0 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ row: 0, column: 1 });
-      expect(result).toContainEqual({ row: 1, column: 0 });
+      const soft = createSoftAssertions();
+
+      soft.expect(result).toHaveLength(2);
+      soft.expect(result).toContainEqual({ row: 0, column: 1 });
+      soft.expect(result).toContainEqual({ row: 1, column: 0 });
+
+      soft.assertAll();
     });
 
     it("should handle edge positions (bottom-right corner)", () => {
@@ -193,9 +209,13 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 2, column: 2 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(0);
-      expect(result).not.toContainEqual({ row: 1, column: 2 });
-      expect(result).not.toContainEqual({ row: 2, column: 1 });
+      const soft = createSoftAssertions();
+
+      soft.expect(result).toHaveLength(0);
+      soft.expect(result).not.toContainEqual({ row: 1, column: 2 });
+      soft.expect(result).not.toContainEqual({ row: 2, column: 1 });
+
+      soft.assertAll();
     });
 
     it("should include letter characters as valid neighbors", () => {
@@ -206,11 +226,15 @@ describe("mapNavigation", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getNeighbors(map, position, isValidForwardCharacter);
-      expect(result).toHaveLength(4);
-      expect(result).toContainEqual({ row: 0, column: 1 });
-      expect(result).toContainEqual({ row: 2, column: 1 });
-      expect(result).toContainEqual({ row: 1, column: 0 });
-      expect(result).toContainEqual({ row: 1, column: 2 });
+      const soft = createSoftAssertions();
+
+      soft.expect(result).toHaveLength(4);
+      soft.expect(result).toContainEqual({ row: 0, column: 1 });
+      soft.expect(result).toContainEqual({ row: 2, column: 1 });
+      soft.expect(result).toContainEqual({ row: 1, column: 0 });
+      soft.expect(result).toContainEqual({ row: 1, column: 2 });
+
+      soft.assertAll();
     });
 
     it("should handle jagged arrays (out of bounds)", () => {

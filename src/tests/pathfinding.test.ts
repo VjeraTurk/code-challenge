@@ -11,6 +11,7 @@ import {
 } from "../utils/pathFinding";
 import type { Position, Map } from "../types";
 import { MAP_CHARACTERS, ERROR_MESSAGES } from "../constants";
+import { createSoftAssertions } from "./softAssertions";
 
 describe("pathFinding", () => {
   describe("isMovingHorizontally", () => {
@@ -430,15 +431,17 @@ describe("pathFinding", () => {
         "getFirstStepPosition"
       );
       const result = getNextStepPosition(map, current, null);
-      expect({
+      const soft = createSoftAssertions();
+      soft.expect({
         success: result.success,
         value: (result as { success: true; value: Position }).value,
       }).toEqual({
         success: true,
         value: { row: 1, column: 2 },
       });
-      expect(getFirstStepPositionSpy).toHaveBeenCalledTimes(1);
-      expect(getFirstStepPositionSpy).toHaveBeenCalledWith(map, current);
+      soft.expect(getFirstStepPositionSpy).toHaveBeenCalledTimes(1);
+      soft.expect(getFirstStepPositionSpy).toHaveBeenCalledWith(map, current);
+      soft.assertAll();
     });
 
     it("should continue forward when not at intersection", () => {
@@ -469,8 +472,8 @@ describe("pathFinding", () => {
       );
 
       const result = getNextStepPosition(map, current, previous);
-
-      expect({
+      const soft = createSoftAssertions();
+      soft.expect({
         success: result.success,
         value: (result as { success: true; value: Position }).value,
       }).toEqual({
@@ -479,12 +482,14 @@ describe("pathFinding", () => {
       });
 
       // Verify that getIntersectionStep was called
-      expect(getIntersectionStepSpy).toHaveBeenCalledTimes(1);
-      expect(getIntersectionStepSpy).toHaveBeenCalledWith(
+      soft.expect(getIntersectionStepSpy).toHaveBeenCalledTimes(1);
+      soft.expect(getIntersectionStepSpy).toHaveBeenCalledWith(
         map,
         current,
         previous
       );
+
+      soft.assertAll();
 
       // Clean up the spy
       getIntersectionStepSpy.mockRestore();
