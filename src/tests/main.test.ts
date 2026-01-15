@@ -30,46 +30,77 @@ import {
 describe("Valid maps tests", () => {
   it("should match path: a basic example", () => {
     const result = main(mapBasicExample);
-    expect(result.characterPath.join("")).toBe("@---A---+|C|+---+|+-B-x");
-    expect(result.letters.join("")).toBe("ACB");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@---A---+|C|+---+|+-B-x",
+      letters: "ACB",
+    });
   });
 
   it("should match path: go straight through intersections", () => {
     const result = main(mapGoStraightThroughIntersections);
-    expect(result.characterPath.join("")).toBe(
-      "@|A+---B--+|+--C-+|-||+---D--+|x"
-    );
-    expect(result.letters.join("")).toBe("ABCD");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@|A+---B--+|+--C-+|-||+---D--+|x",
+      letters: "ABCD",
+    });
   });
 
   it("should match path: letters may be found on turns", () => {
     const result = main(mapLettersMayBeFoundOnTurns);
-    expect(result.characterPath.join("")).toBe("@---A---+|||C---+|+-B-x");
-    expect(result.letters.join("")).toBe("ACB");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@---A---+|||C---+|+-B-x",
+      letters: "ACB",
+    });
   });
 
   it("should match path: do not collect a letter from the same location twice", () => {
     const result = main(mapDoNotCollectALetterFromTheSameLocationTwice);
-    expect(result.characterPath.join("")).toBe(
-      "@-G-O-+|+-+|O||+-O-N-+|I|+-+|+-I-+|ES|x"
-    );
-    expect(result.letters.join("")).toBe("GOONIES");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@-G-O-+|+-+|O||+-O-N-+|I|+-+|+-I-+|ES|x",
+      letters: "GOONIES",
+    });
   });
 
   it("should match path: keep direction, even in a compact space", () => {
     const result = main(mapKeepDirectionEvenInACompactSpace);
-    expect(result.characterPath.join("")).toBe("@B+++B|+-L-+A+++A-+Hx");
-    expect(result.letters.join("")).toBe("BLAH");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@B+++B|+-L-+A+++A-+Hx",
+      letters: "BLAH",
+    });
   });
   it("should match path: ignore stuff after end of characterPath", () => {
     const result = main(mapIgnoreStuffAfterEndOfPath);
-    expect(result.characterPath.join("")).toBe("@-A--+|+-B--x");
-    expect(result.letters.join("")).toBe("AB");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@-A--+|+-B--x",
+      letters: "AB",
+    });
   });
   it("should match path: first step intersection", () => {
     const result = main(mapFirstStepIntersection);
-    expect(result.characterPath.join("")).toBe("@+||+-A||x");
-    expect(result.letters.join("")).toBe("A");
+    expect({
+      characterPath: result.characterPath.join(""),
+      letters: result.letters.join(""),
+    }).toEqual({
+      characterPath: "@+||+-A||x",
+      letters: "A",
+    });
   });
 });
 

@@ -56,10 +56,13 @@ describe("pathFinding", () => {
       const map: Map = [["@", "-", "x"]];
       const position: Position = { row: -1, column: 0 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe("Invalid position");
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: "Invalid position",
+      });
     });
 
     it("should return error when no valid neighbors found", () => {
@@ -69,10 +72,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 0, column: 0 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.BROKEN_PATH,
+      });
     });
 
     it("should return error when firstNeighbor is undefined", () => {
@@ -89,10 +95,13 @@ describe("pathFinding", () => {
       const position: Position = { row: 0, column: 0 };
       const result = getFirstStepPosition(map, position);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.BROKEN_PATH,
+      });
 
       getNeighborsSpy.mockRestore();
     });
@@ -105,12 +114,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(
-          ERROR_MESSAGES.MULTIPLE_STARTING_PATHS
-        );
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.MULTIPLE_STARTING_PATHS,
+      });
     });
 
     it("should not find any neighbors", () => {
@@ -121,10 +131,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.BROKEN_PATH,
+      });
     });
 
     it("should return single valid neighbor", () => {
@@ -135,10 +148,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 1, column: 2 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 1, column: 2 },
+      });
     });
 
     it("should accept letter as valid neighbor", () => {
@@ -149,10 +165,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
 
     it("should accept end character as valid neighbor", () => {
@@ -163,10 +182,13 @@ describe("pathFinding", () => {
       ];
       const position: Position = { row: 1, column: 1 };
       const result = getFirstStepPosition(map, position);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 1, column: 2 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 1, column: 2 },
+      });
     });
   });
 
@@ -176,10 +198,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 0, column: 2 };
       const previous: Position = { row: 0, column: 1 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.FAKE_TURN);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.FAKE_TURN,
+      });
     });
 
     it("should return error when multiple valid turns found (fork)", () => {
@@ -191,10 +216,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.FORK_IN_PATH);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.FORK_IN_PATH,
+      });
     });
 
     it("should return valid turn when coming from horizontal (should go vertical)", () => {
@@ -206,10 +234,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
 
     it("should return valid turn when coming from vertical (should go horizontal)", () => {
@@ -221,11 +252,14 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 0, column: 1 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(true);
       // Should go horizontal (left), since right is empty
-      if (result.success) {
-        expect(result.value).toEqual({ row: 1, column: 0 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 1, column: 0 },
+      });
     });
 
     it("should handle letter as intersection", () => {
@@ -237,10 +271,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
 
     it("should handle upward movement from horizontal", () => {
@@ -252,10 +289,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
 
     it("should handle downward movement from horizontal", () => {
@@ -267,10 +307,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getIntersectionStep(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 2, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 2, column: 1 },
+      });
     });
 
     it("should return error when validTurn is undefined", () => {
@@ -304,10 +347,13 @@ describe("pathFinding", () => {
 
       const result = getIntersectionStep(map, current, previous);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.FAKE_TURN);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.FAKE_TURN,
+      });
 
       getNeighborsSpy.mockRestore();
     });
@@ -384,10 +430,13 @@ describe("pathFinding", () => {
         "getFirstStepPosition"
       );
       const result = getNextStepPosition(map, current, null);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 1, column: 2 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 1, column: 2 },
+      });
       expect(getFirstStepPositionSpy).toHaveBeenCalledTimes(1);
       expect(getFirstStepPositionSpy).toHaveBeenCalledWith(map, current);
     });
@@ -397,10 +446,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
       const result = getNextStepPosition(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 2 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 2 },
+      });
     });
     xit("should handle intersection character", () => {
       const map: Map = [
@@ -418,10 +470,13 @@ describe("pathFinding", () => {
 
       const result = getNextStepPosition(map, current, previous);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
 
       // Verify that getIntersectionStep was called
       expect(getIntersectionStepSpy).toHaveBeenCalledTimes(1);
@@ -444,10 +499,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 1, column: 1 };
       const previous: Position = { row: 1, column: 0 };
       const result = getNextStepPosition(map, current, previous);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
 
     it("should return error when path is broken", () => {
@@ -455,10 +513,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 0, column: 1 };
       const previous: Position = { row: 0, column: 0 };
       const result = getNextStepPosition(map, current, previous);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.BROKEN_PATH);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.BROKEN_PATH,
+      });
     });
 
     it("should return error when currentChar is undefined (out of bounds)", () => {
@@ -466,10 +527,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 0, column: 2 }; // Out of bounds
       const previous: Position = { row: 0, column: 1 };
       const result = getNextStepPosition(map, current, previous);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION,
+      });
     });
 
     it("should return error when currentChar is undefined (invalid row)", () => {
@@ -477,10 +541,13 @@ describe("pathFinding", () => {
       const current: Position = { row: 5, column: 0 }; // Out of bounds
       const previous: Position = { row: 0, column: 0 };
       const result = getNextStepPosition(map, current, previous);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.CHARACTER_NOT_FOUND_AT_CURRENT_POSITION,
+      });
     });
     it("should prioritize forward step over intersection when both are valid", () => {
       const map: Map = [
@@ -492,10 +559,13 @@ describe("pathFinding", () => {
       const previous: Position = { row: 1, column: 0 };
       const result = getNextStepPosition(map, current, previous);
       // Should check forward first, but since it's an intersection, should turn
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toEqual({ row: 0, column: 1 });
-      }
+      expect({
+        success: result.success,
+        value: (result as { success: true; value: Position }).value,
+      }).toEqual({
+        success: true,
+        value: { row: 0, column: 1 },
+      });
     });
   });
 });

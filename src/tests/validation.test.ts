@@ -8,12 +8,13 @@ describe("validation", () => {
     it("should return error when start or end not found", () => {
       const map: Map = [[" ", " ", " "]];
       const result = validateMapStartAndEnd(map);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(
-          ERROR_MESSAGES.START_OR_END_NOT_FOUND
-        );
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.START_OR_END_NOT_FOUND,
+      });
     });
 
     it("should return error when multiple start or end characters found", () => {
@@ -22,20 +23,28 @@ describe("validation", () => {
         [" ", " ", "x"],
       ];
       const result = validateMapStartAndEnd(map);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(ERROR_MESSAGES.MULTIPLE_START_OR_END);
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.MULTIPLE_START_OR_END,
+      });
     });
 
     it("should return success when start and end are found", () => {
       const map: Map = [["@", "-", "x"]];
       const result = validateMapStartAndEnd(map);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.start).toEqual({ row: 0, column: 0 });
-        expect(result.value.end).toEqual({ row: 0, column: 2 });
-      }
+      const value = (result as { success: true; value: { start: Position; end: Position } }).value;
+      expect({
+        success: result.success,
+        start: value.start,
+        end: value.end,
+      }).toEqual({
+        success: true,
+        start: { row: 0, column: 0 },
+        end: { row: 0, column: 2 },
+      });
     });
 
     it("should return error when startPosition is undefined after length check", () => {
@@ -53,12 +62,13 @@ describe("validation", () => {
       const map: Map = [["@", "-", "x"]];
       const result = validateMapStartAndEnd(map);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe(
-          ERROR_MESSAGES.START_OR_END_NOT_FOUND
-        );
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: ERROR_MESSAGES.START_OR_END_NOT_FOUND,
+      });
 
       getCharacterPositionsSpy.mockRestore();
     });
@@ -76,10 +86,13 @@ describe("validation", () => {
       const map: Map = [["@", "-", "x"]];
       const result = validateMapStartAndEnd(map);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe("Invalid position");
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: "Invalid position",
+      });
 
       getCharacterPositionsSpy.mockRestore();
     });
@@ -97,50 +110,61 @@ describe("validation", () => {
       const map: Map = [["@", "-", "x"]];
       const result = validateMapStartAndEnd(map);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toBe("Invalid position");
-      }
+      expect({
+        success: result.success,
+        errorMessage: (result as { success: false; error: Error }).error.message,
+      }).toEqual({
+        success: false,
+        errorMessage: "Invalid position",
+      });
 
       getCharacterPositionsSpy.mockRestore();
     });
   });
 
   describe("isValidString", () => {
-    it("should return true for single character string", () => {
-      expect(isValidString("a")).toBe(true);
-      expect(isValidString("A")).toBe(true);
-      expect(isValidString("@")).toBe(true);
-      expect(isValidString("-")).toBe(true);
-      expect(isValidString(" ")).toBe(true);
+    it.each([
+      ["a"],
+      ["A"],
+      ["@"],
+      ["-"],
+      [" "],
+    ])("should return true for single character string: %s", (input) => {
+      expect(isValidString(input)).toBe(true);
     });
 
     it("should return false for empty string", () => {
       expect(isValidString("")).toBe(false);
     });
 
-    it("should return false for string with multiple characters", () => {
-      expect(isValidString("ab")).toBe(false);
-      expect(isValidString("ABC")).toBe(false);
-      expect(isValidString("--")).toBe(false);
+    it.each([
+      ["ab"],
+      ["ABC"],
+      ["--"],
+    ])("should return false for string with multiple characters: %s", (input) => {
+      expect(isValidString(input)).toBe(false);
     });
 
-    it("should return false for non-string types", () => {
-      expect(isValidString(null as any)).toBe(false);
-      expect(isValidString(undefined as any)).toBe(false);
-      expect(isValidString(123 as any)).toBe(false);
-      expect(isValidString({} as any)).toBe(false);
-      expect(isValidString([] as any)).toBe(false);
+    it.each([
+      [null],
+      [undefined],
+      [123],
+      [{}],
+      [[]],
+    ])("should return false for non-string types: %s", (input) => {
+      expect(isValidString(input as any)).toBe(false);
     });
 
-    it("should return true for valid path characters", () => {
-      expect(isValidString("@")).toBe(true);
-      expect(isValidString("x")).toBe(true);
-      expect(isValidString("-")).toBe(true);
-      expect(isValidString("|")).toBe(true);
-      expect(isValidString("+")).toBe(true);
-      expect(isValidString("A")).toBe(true);
-      expect(isValidString("Z")).toBe(true);
+    it.each([
+      ["@"],
+      ["x"],
+      ["-"],
+      ["|"],
+      ["+"],
+      ["A"],
+      ["Z"],
+    ])("should return true for valid path character: %s", (input) => {
+      expect(isValidString(input)).toBe(true);
     });
   });
 
@@ -171,12 +195,14 @@ describe("validation", () => {
       expect(isValidMap(map)).toBe(false);
     });
 
-    it("should return false for non-array types", () => {
-      expect(isValidMap(null as any)).toBe(false);
-      expect(isValidMap(undefined as any)).toBe(false);
-      expect(isValidMap("string" as any)).toBe(false);
-      expect(isValidMap(123 as any)).toBe(false);
-      expect(isValidMap({} as any)).toBe(false);
+    it.each([
+      [null],
+      [undefined],
+      ["string"],
+      [123],
+      [{}],
+    ])("should return false for non-array type: %s", (input) => {
+      expect(isValidMap(input as any)).toBe(false);
     });
 
     it("should return true for array with empty rows", () => {
@@ -224,11 +250,13 @@ describe("validation", () => {
       expect(isValidPosition(undefined as any)).toBe(false);
     });
 
-    it("should return false for non-object types", () => {
-      expect(isValidPosition("string" as any)).toBe(false);
-      expect(isValidPosition(123 as any)).toBe(false);
-      expect(isValidPosition(true as any)).toBe(false);
-      expect(isValidPosition([] as any)).toBe(false);
+    it.each([
+      ["string"],
+      [123],
+      [true],
+      [[]],
+    ])("should return false for non-object type: %s", (input) => {
+      expect(isValidPosition(input as any)).toBe(false);
     });
 
     it("should return false for object without row property", () => {
@@ -239,18 +267,22 @@ describe("validation", () => {
       expect(isValidPosition({ row: 0 } as any)).toBe(false);
     });
 
-    it("should return false for object with non-number row", () => {
-      expect(isValidPosition({ row: "0", column: 0 } as any)).toBe(false);
-      expect(isValidPosition({ row: null, column: 0 } as any)).toBe(false);
-      expect(isValidPosition({ row: undefined, column: 0 } as any)).toBe(false);
-      expect(isValidPosition({ row: {}, column: 0 } as any)).toBe(false);
+    it.each([
+      [{ row: "0", column: 0 }],
+      [{ row: null, column: 0 }],
+      [{ row: undefined, column: 0 }],
+      [{ row: {}, column: 0 }],
+    ])("should return false for object with non-number row: %s", (input) => {
+      expect(isValidPosition(input as any)).toBe(false);
     });
 
-    it("should return false for object with non-number column", () => {
-      expect(isValidPosition({ row: 0, column: "0" } as any)).toBe(false);
-      expect(isValidPosition({ row: 0, column: null } as any)).toBe(false);
-      expect(isValidPosition({ row: 0, column: undefined } as any)).toBe(false);
-      expect(isValidPosition({ row: 0, column: {} } as any)).toBe(false);
+    it.each([
+      [{ row: 0, column: "0" }],
+      [{ row: 0, column: null }],
+      [{ row: 0, column: undefined }],
+      [{ row: 0, column: {} }],
+    ])("should return false for object with non-number column: %s", (input) => {
+      expect(isValidPosition(input as any)).toBe(false);
     });
 
     it("should return false for object with NaN row", () => {

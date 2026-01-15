@@ -90,15 +90,19 @@ describe("characterValidation", () => {
   });
 
   describe("isValidForwardCharacter", () => {
-    it("should return true for direction characters", () => {
-      expect(isValidForwardCharacter(MAP_CHARACTERS.HORIZONTAL)).toBe(true);
-      expect(isValidForwardCharacter(MAP_CHARACTERS.VERTICAL)).toBe(true);
-      expect(isValidForwardCharacter(MAP_CHARACTERS.INTERSECTION)).toBe(true);
+    it.each([
+      [MAP_CHARACTERS.HORIZONTAL],
+      [MAP_CHARACTERS.VERTICAL],
+      [MAP_CHARACTERS.INTERSECTION],
+    ])("should return true for direction character: %s", (char) => {
+      expect(isValidForwardCharacter(char)).toBe(true);
     });
 
-    it("should return true for capital letters", () => {
-      expect(isValidForwardCharacter("A")).toBe(true);
-      expect(isValidForwardCharacter("Z")).toBe(true);
+    it.each([
+      ["A"],
+      ["Z"],
+    ])("should return true for capital letter: %s", (char) => {
+      expect(isValidForwardCharacter(char)).toBe(true);
     });
 
     it("should return true for end character", () => {
@@ -109,10 +113,12 @@ describe("characterValidation", () => {
       expect(isValidForwardCharacter(MAP_CHARACTERS.START)).toBe(false);
     });
 
-    it("should return false for invalid characters", () => {
-      expect(isValidForwardCharacter("a")).toBe(false);
-      expect(isValidForwardCharacter("1")).toBe(false);
-      expect(isValidForwardCharacter(" ")).toBe(false);
+    it.each([
+      ["a"],
+      ["1"],
+      [" "],
+    ])("should return false for invalid character: %s", (char) => {
+      expect(isValidForwardCharacter(char)).toBe(false);
     });
   });
 });
